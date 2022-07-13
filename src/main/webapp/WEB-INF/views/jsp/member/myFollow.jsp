@@ -56,14 +56,14 @@
 												<h4>
 													<img src="/teen/resources/images/icon/icon_badge.png"
 														class="i_badge">
-													<button onclick="dp_menu()">${follow.member_nick}</button>
+													<button id="dropdown-menu" onclick="dp_menu()" style="text-decoration: underline;">${follow.member_nick}</button>
 												</h4>
 												<div style="display: none; position: absolute;" id="drop-content">
 													<input type="hidden" id="member_nick" value="${follow.member_nick }">
 													<input type="hidden" id="member_no" value="${follow.member_no }">
-													<div><button onclick="follow()" >팔로우 하기</button></div> 
-													<div><button onclick="msg()" >쪽지 보내기</button></div> 
-													<div><button onclick="board()" >게시글 보기</button></div>
+													<div><button  class= "drop-button" id="drop-button1" onclick="follow()" >팔로우 하기</button></div> 
+													<div><button  class= "drop-button" id="drop-button2" onclick="msg()" >쪽지 보내기</button></div> 
+													<div><button  class= "drop-button" id="drop-button3" onclick="board()" >게시글 보기</button></div>
 												</div>
 											</div>
 											<span class="row_top date"><fmt:formatDate value="${follow.board_date}" pattern="yyyy.MM.dd"/></span>
