@@ -81,7 +81,7 @@ SELECT
 
 	<insert id="insertFollow"
 	parameterType="com.ez.teen.follow.model.MemberFollowModel">
-	INSERT INTO follow(
+	INSERT INTO FOLLOW(
 	 FOLLOW_DATE
 	,FOLLOW_NO
 	,FOLLOWING_MEMBER_NO
