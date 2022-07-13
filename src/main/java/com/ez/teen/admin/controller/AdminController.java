@@ -74,6 +74,8 @@ public class AdminController {
         return "admin/memberList";
 	}
 	
+	
+	
 	// 회원정보 수정 폼
 	@GetMapping("/memberModify")
 	public String memberModifyForm(MemberModel memberModel, MemberParam memberParam, Model model) {
