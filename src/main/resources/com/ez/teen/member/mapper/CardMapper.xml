@@ -9,32 +9,32 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-ma
 		resultType="com.ez.teen.member.model.MemberModel"
 		parameterType="com.ez.teen.member.model.MemberCardModel">
 		SELECT MEMBER_NAME, MEMBER_ID, MEMBER_EMAIL,
-		MEMBER_DATE, MEMBER_NICK, MEMBER_POINT FROM member
+		MEMBER_DATE, MEMBER_NICK, MEMBER_POINT FROM MEMBER
 		WHERE MEMBER_NO = #{member_no}
 	</select>
 
 	<!-- 스크랩 게시글 총 수 -->
 	<select id="getScrapCount"
 		parameterType="com.ez.teen.member.model.MemberCardModel" resultType="int">
-		select count(*) from scrap
+		select count(*) from SCRAP
 		WHERE MEMBER_NO = #{member_no}
 	</select>
 
 	<!-- 팔로우한 회원 총 수 -->
 	<select id="getFollowCount" parameterType="com.ez.teen.member.model.MemberCardModel" resultType="int">
-		SELECT COUNT(*) FROM follow
+		SELECT COUNT(*) FROM FOLLOW
 		WHERE FOLLOW_NO = #{member_no}
 	</select>
 	
 	<!-- 내가 쓴 글 총 수 -->
 	<select id="getBoardCount" parameterType="com.ez.teen.member.model.MemberCardModel" resultType="int">
-		SELECT COUNT(*) FROM board
+		SELECT COUNT(*) FROM BOARD
 		WHERE MEMBER_NO = #{member_no}
 	</select>
 	
 	<!-- 내가 쓴 댓글 총 수 -->
 	<select id="getCommentCount" parameterType="com.ez.teen.member.model.MemberCardModel" resultType="int">
-		SELECT COUNT(*) FROM bcomment
+		SELECT COUNT(*) FROM BCOMMENT
 		WHERE MEMBER_NO = #{member_no}
 	</select>
 
@@ -45,8 +45,8 @@ SELECT
 		F.MEMBER_NICK AS FOLLOW_NICK,
         F.FOLLOW_NO,
         M.MEMBER_NICK AS MEMBER_NICK
-		FROM follow F
-        INNER JOIN member M
+		FROM FOLLOW F
+        INNER JOIN MEMBER M
         ON F.FOLLOW_NO = M.MEMBER_NO
 		WHERE F.FOLLOW_NO = #{member_no}
         OR F.FOLLOWING_MEMBER_NO = #{member_no}
@@ -63,8 +63,8 @@ SELECT
 		S.SCRAP_DATE,
 		S.SCRAP_NO
 
-		FROM scrap S
-		INNER JOIN board B
+		FROM SCRAP S
+		INNER JOIN BOARD B
 		ON B.BOARD_NO = S.BOARD_NO
 
 		WHERE S.MEMBER_NO = #{member_no}
@@ -75,7 +75,7 @@ SELECT
 	
 	<select id="getRecvMessageList" parameterType="com.ez.teen.member.model.MemberCardModel" resultType="com.ez.teen.chat.model.ChatModel">
 		SELECT
-		* FROM chat
+		* FROM CHAT
 		WHERE RECV_NICK = #{member_nick}
 	</select>
 

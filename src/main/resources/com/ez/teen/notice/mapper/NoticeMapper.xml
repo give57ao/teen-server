@@ -15,8 +15,8 @@ N.NOTI_NO
 ,N.NOTI_HIT_COUNT
 ,N.NOTI_FILE_CHECK
 
-FROM notice N
-INNER JOIN member M
+FROM NOTICE N
+INNER JOIN MEMBER M
 ON N.MEMBER_NO = M.MEMBER_NO
 
 <if test='search == "title"'>
@@ -44,8 +44,8 @@ LIMIT #{start} , #{end}
 <select id="getNoticeCount" resultType="int" parameterType="com.ez.teen.notice.model.NoticeParam"> 
 		
 
-SELECT COUNT(*) FROM notice N
-INNER JOIN member M
+SELECT COUNT(*) FROM NOTICE N
+INNER JOIN MEMBER M
 ON N.MEMBER_NO = M.MEMBER_NO
 
 <if test='search == "title"'>
@@ -70,10 +70,10 @@ OR N.NOTI_CONTENT LIKE CONCAT('%', #{keyword}, '%')
 <!-- 게시글 작성 -->
 	<insert id="insertNotice" parameterType="com.ez.teen.notice.mapper.NoticeMapper" useGeneratedKeys="true" keyProperty="noti_no" >
 	<selectKey keyProperty="noti_no" resultType="int" order="BEFORE" >
-		SELECT IFNULL(max(noti_no),1) from notice
+		SELECT IFNULL(max(noti_no),1) from NOTICE
 	</selectKey>
 	<![CDATA[
-	INSERT INTO notice(
+	INSERT INTO NOTICE(
 	 NOTI_NO
 	,MEMBER_NO
 	,NOTI_TITLE
@@ -94,14 +94,14 @@ OR N.NOTI_CONTENT LIKE CONCAT('%', #{keyword}, '%')
 	
 	<!-- 파일 유무에 따른 체크 업데이트 -->
 	<update id="NotifileCk" parameterType="com.ez.teen.notice.mapper.NoticeMapper" >
-	UPDATE notice SET
+	UPDATE NOTICE SET
 	NOTI_FILE_CHECK = 'Y'
 	WHERE NOTI_NO = #{noti_no}
 	</update>
 	
 	<!-- 첨부파일 업로드 -->
 	<insert id="insertNotiFile" parameterType="hashMap">
-	<![CDATA[ INSERT INTO bfile(
+	<![CDATA[ INSERT INTO BFILE(
 	NOTI_NO
 	,ORG_FILE_NAME
 	,STORED_FILE_NAME
@@ -126,7 +126,7 @@ OR N.NOTI_CONTENT LIKE CONCAT('%', #{keyword}, '%')
 	,ORG_FILE_NAME
 	,ROUND(FILE_SIZE/1024,1) AS FILE_SIZE
 	,DEL_GB
-	FROM bfile
+	FROM BFILE
 	WHERE NOTI_NO = #{noti_no}
 	AND DEL_GB = 'N'
 	ORDER BY FILE_NO ASC
@@ -149,10 +149,10 @@ OR N.NOTI_CONTENT LIKE CONCAT('%', #{keyword}, '%')
 			,C.REF_LEVEL
 			
 			
-			FROM board B
-			INNER JOIN bcomment C
+			FROM BOARD B
+			INNER JOIN BCOMMENT C
 			ON B.BOARD_NO = C.BOARD_NO
-			INNER JOIN member M
+			INNER JOIN MEMBER M
 			ON B.MEMBER_NO = M.MEMBER_NO
 			
 			<if test='search == "content"'>
@@ -193,7 +193,7 @@ OR N.NOTI_CONTENT LIKE CONCAT('%', #{keyword}, '%')
 
 	<!-- 신고 댓글 삭제 -->
 	<delete id="deleteCmt" parameterType="com.ez.teen.board.model.CommentModel">
-	DELETE FROM bcomment
+	DELETE FROM BCOMMENT
 	WHERE REF_STEP = #{ref_step} AND BOARD_NO = #{board_no}
 	</delete>
 	
@@ -206,8 +206,8 @@ N.NOTI_NO
 ,N.NOTI_DATE
 ,N.NOTI_HIT_COUNT
 ,N.NOTI_FILE_CHECK
-FROM notice N
-INNER JOIN member M
+FROM NOTICE N
+INNER JOIN MEMBER M
 ON N.MEMBER_NO = M.MEMBER_NO
 
 WHERE N.NOTI_NO = #{noti_no}
@@ -216,7 +216,7 @@ WHERE N.NOTI_NO = #{noti_no}
 
 <update id="hitCount">
 
-UPDATE notice SET NOTI_HIT_COUNT = NOTI_HIT_COUNT + 1 WHERE NOTI_NO = #{noti_no}
+UPDATE NOTICE SET NOTI_HIT_COUNT = NOTI_HIT_COUNT + 1 WHERE NOTI_NO = #{noti_no}
 
 </update>
 
