@@ -131,6 +131,13 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-ma
 	 SEND_NICK = '탈퇴한 회원'
 	 WHERE SEND_NICK = #{member_nick}
 	 </update>
+	 
+	 <!-- 이메일 중복체크 -->
+    <select id="emailCheck" resultType="int">
+    SELECT COUNT(MEMBER_EMAIL) FROM MEMBER WHERE MEMBER_EMAIL = #{member_email}
+    </select>
+	 
+	 
 	
 	 
 </mapper>
