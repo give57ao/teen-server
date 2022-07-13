@@ -93,7 +93,7 @@
 	<selectKey keyProperty="board_no" resultType="int" order="BEFORE" >
 		SELECT ifnull(max(board_no)+1,1) FROM BOARD
 	</selectKey>
-		INSERT INTO board(
+		INSERT INTO BOARD(
 	 MEMBER_NO
 	,BOARD_TITLE
 	,BOARD_DATE
@@ -613,7 +613,7 @@ ORDER BY board_comment_count DESC
 		UPDATE BOARD
 		SET
 		BOARD_LIKE_COUNT = (SELECT COUNT(*)
-		FROM like_table
+		FROM LIKE_TABLE
 		WHERE BOARD_NO = #{board_no})
 		WHERE BOARD_NO = #{board_no}
 	</select>
@@ -637,7 +637,7 @@ ORDER BY board_comment_count DESC
 		UPDATE BOARD
 		SET
 		BOARD_REPORT_COUNT = (SELECT COUNT(*)
-		FROM report
+		FROM REPORT
 		WHERE BOARD_NO = #{board_no})
 		WHERE BOARD_NO = #{board_no}
 	</select>
