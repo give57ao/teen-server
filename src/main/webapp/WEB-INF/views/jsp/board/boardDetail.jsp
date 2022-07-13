@@ -66,6 +66,17 @@
 	                                </ul>
 	                                <div class="row_top member">
 	                                    	<h4>
+	                                    	<c:choose>
+												<c:when test="${boardDetail.member_pro_check == 'Y' }">
+													<span class="rank">[Expert]</span>
+												</c:when>
+												<c:when test="${boardDetail.member_admin == 'Y'}">
+													<span class="rank" style="color: #FF0105;">[Admin]</span>
+												</c:when>
+												<c:otherwise>
+													<span class="rank" style="color: #111;">[TeenCoder]</span>
+												</c:otherwise>
+											</c:choose>
 	                                        <button  id="dropdown-menu" onclick="dp_menu()" style="text-decoration: underline;" >${boardDetail.member_nick}</button>
 											</h4>
 												<div style="display: none; position: absolute;" id="drop-content">
@@ -193,6 +204,17 @@
 		                            <div class="row_info">
 		                                <div class="row_top member">
 		                                    <h4>
+		                                    <c:choose>
+													<c:when test="${boardComment.member_pro_check == 'Y' }">
+														<span class="rank">[Expert]</span>
+													</c:when>
+													<c:when test="${boardComment.member_admin == 'Y'}">
+														<span class="rank" style="color: #FF0105;">[Admin]</span>
+													</c:when>
+													<c:otherwise>
+														<span class="rank" style="color: #111;">[TeenCoder]</span>
+													</c:otherwise>
+												</c:choose>
 		                                        ${boardComment.member_nick}
 		                                    </h4>
 		                                </div>
@@ -266,6 +288,17 @@
 				                            <div class="row_info">
 				                                <div class="row_top member">
 				                                    <h4>
+				                                    <c:choose>
+																<c:when test="${boardAnswer.member_pro_check == 'Y' }">
+																	<span class="rank">[Expert]</span>
+																</c:when>
+																<c:when test="${boardAnswer.member_admin == 'Y'}">
+																	<span class="rank" style="color: #FF0105;">[Admin]</span>
+																</c:when>
+																<c:otherwise>
+																	<span class="rank" style="color: #111;">[TeenCoder]</span>
+																</c:otherwise>
+															</c:choose>
 				                                        ${boardAnswer.member_nick}
 				                                    </h4>
 				                                </div>

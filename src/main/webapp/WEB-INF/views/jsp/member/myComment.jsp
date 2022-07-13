@@ -53,7 +53,7 @@
 							<option value="title" id="search">제목</option>
 						</select>
 						<div class="search">
-							<input type="text" id="keyword" placeholder="검색">
+							<input type="text" id="keyword" onkeyup="enterkey()" placeholder="검색">
 							<button class="btn_search" onClick ="searchBoard()"></button>
 						</div>
 					</div>
@@ -131,7 +131,8 @@
 				<!-- Member Info -->
 				<div id="member_info">
                     <a href="/teen/board/boardWrite" class="btn_com btn_main">게시글 작성</a>
-					<div class="mycard"></div>
+					<!-- My Card -->
+						<jsp:include page="../template/myCard.jsp" flush="false" />
 				</div>
 			</div>
 		</div>
@@ -142,5 +143,18 @@
 	
 	<!-- JS -->
 	<script type="text/javascript" src="/teen/resources/js/member/myPage/myComment.js"></script>
+	<script>
+	function deleteComment(board_no, ref_step, ref_level) {
+		var board_no = document.getElementById('board_no').value;
+		var ref_step = document.getElementById('ref_step').value;
+		var ref_level = document.getElementById('ref_level').value;
+		if(confirm("해당 댓글을 삭제하시겠습니까?")) {
+			alert("해당 댓글을 삭제하였습니다.");
+			location.href='/teen/board/deleteComment?board_no='+board_no+'&ref_step='+ref_step+'&ref_level='+ref_level
+		}else{
+			return false;
+		}
+	}
+	</script>
 </body>
 </html>

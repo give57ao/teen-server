@@ -92,10 +92,21 @@
 			                                </ul>
 			                                <div class="row_top member">
 			                                    <h4>
-			                                        <c:if test="${board.board_count > 50 }">
-			                                        [글쟁이]
-			                                        </c:if>
-			                                         ${board.member_nick}
+			                                       <c:choose>
+														<c:when test="${board.member_pro_check == 'Y' }">
+															<span class="rank">[Expert]</span>
+														</c:when>
+														<c:when test="${board.member_admin == 'Y'}">
+															<span class="rank" style="color: #FF0105;">[Admin]</span>
+														</c:when>
+														<c:when test="${board.board_count > 50 }">
+															<span class="rank">[글쟁이]</span>
+														</c:when>
+														<c:otherwise>
+															<span class="rank" style="color: #111;">[TeenCoder]</span>
+														</c:otherwise>
+													</c:choose>
+													${board.member_nick}
 			                                    </h4>
 			                                </div>
 											<span class="row_top date"><fmt:formatDate value="${board.board_date}" pattern="yyyy.MM.dd"/></span>
@@ -159,7 +170,8 @@
                 <!-- Member Info -->
                 <div id="member_info">
                     <a href="/teen/board/boardWrite" class="btn_com btn_main">게시글 작성</a>
-                    <div class="mycard"></div>
+                    <!-- My Card -->
+						<jsp:include page="../template/myCard.jsp" flush="false" />
                 </div>
             </div>
         </div>
