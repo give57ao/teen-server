@@ -1,0 +1,355 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ez.teen.admin.mapper.AdminMapper">
+	
+	<!-- 전체 회원 수 -->
+	<select id="getMemberCount" resultType="int" parameterType="com.ez.teen.member.model.MemberParam">
+		SELECT COUNT(*) AS allMemberCount FROM member
+
+				<if test='search == "id"'>
+				WHERE MEMBER_ID LIKE CONCAT('%', #{keyword}, '%')
+				</if>
+		
+				<if test='search == "nick"'>
+				WHERE MEMBER_NICK LIKE CONCAT('%', #{keyword}, '%')
+				</if>
+				
+				<if test='search == "all"'>
+				WHERE MEMBER_ID LIKE CONCAT('%', #{keyword}, '%')
+				OR MEMBER_NICK LIKE CONCAT('%', #{keyword}, '%')
+				</if>
+				
+	</select>
+	
+	<!-- 회원관리 리스트 -->
+	<select id ="memberList" resultType="com.ez.teen.member.model.MemberModel" parameterType="com.ez.teen.member.model.MemberParam">
+			            SELECT MEMBER_NO, MEMBER_ID, MEMBER_NAME, MEMBER_NICK, MEMBER_EMAIL, MEMBER_DATE, MEMBER_ADMIN, MEMBER_PRO_CHECK
+					FROM member
+					
+					<if test='search == "id"'>
+					WHERE MEMBER_ID LIKE CONCAT('%', #{keyword}, '%')
+					</if>
+			
+					<if test='search == "nick"'>
+					WHERE MEMBER_NICK LIKE CONCAT('%', #{keyword}, '%')
+					</if>
+					
+					<if test='search == "all"'>
+					WHERE MEMBER_ID LIKE CONCAT('%', #{keyword}, '%')
+					OR MEMBER_NICK LIKE CONCAT('%', #{keyword}, '%')
+					</if>
+					
+					 LIMIT #{end}  OFFSET #{start}
+	</select>
+	
+	<!-- 회원정보 수정 -->
+	<select id="memberModifyForm" resultType="com.ez.teen.member.model.MemberModel" parameterType="com.ez.teen.member.model.MemberModel">
+		SELECT * FROM member
+	 	WHERE MEMBER_NO = #{member_no}
+	</select>
+	
+ 	<update id="memberModify" parameterType="com.ez.teen.member.model.MemberModel">
+		 <![CDATA[
+		 UPDATE member SET
+		 MEMBER_NICK = #{member_nick},
+		 MEMBER_ADMIN = #{member_admin},
+		 MEMBER_PRO_CHECK = #{member_pro_check}
+		 WHERE MEMBER_NO = #{member_no}
+		 ]]>
+	</update>
+	
+	<!-- 회원정보 삭제 -->
+	<delete id="memberDelete" parameterType="com.ez.teen.member.model.MemberModel">
+		DELETE FROM member 
+	 	WHERE MEMBER_NO = #{member_no}
+ 	</delete>
+ 	
+ 	<select id="getReportCount" resultType="int" parameterType="com.ez.teen.admin.model.ReportParam"> 
+		SELECT COUNT(*) FROM board B
+		INNER JOIN member M
+		ON B.MEMBER_NO = M.MEMBER_NO 
+		WHERE BOARD_REPORT_COUNT > 0
+		
+ 		<if test='search == "title"'>
+		AND B.BOARD_TITLE LIKE CONCAT('%', #{keyword}, '%')
+		</if>
+
+		<if test='search == "content"'>
+		AND B.BOARD_CONTENT LIKE CONCAT('%', #{keyword}, '%')
+		</if>
+		
+		<if test='search == "member_nick"'>
+		AND M.MEMBER_NICK LIKE CONCAT('%', #{keyword}, '%')
+		</if>	
+		
+		<if test='search == "all"'>
+		AND B.BOARD_TITLE LIKE CONCAT('%', #{keyword}, '%')
+		OR M.MEMBER_NICK LIKE CONCAT('%', #{keyword}, '%')
+		OR B.BOARD_CONTENT LIKE CONCAT('%', #{keyword}, '%')
+		</if>
+ 	
+		<if test='board_tag_name != null'>
+		AND LOWER(B.BOARD_TAG_NAME) LIKE '%#{board_tag_name}%'
+		</if>
+ 		
+ 		
+	</select>
+	
+	<select id = "reportList" resultType="com.ez.teen.board.model.BoardModel" parameterType="com.ez.teen.admin.model.ReportParam">
+		
+		SELECT 
+		M.MEMBER_NO,B.BOARD_NO,B.BOARD_CONTENT,B.BOARD_TITLE,
+		B.BOARD_DATE,B.BOARD_REPORT_COUNT,M.MEMBER_NICK 
+		FROM board B
+		INNER JOIN member M 
+		ON B.MEMBER_NO = M.MEMBER_NO
+		
+		 <if test='search == "title"'>
+		 WHERE B.BOARD_TITLE LIKE CONCAT('%', #{keyword}, '%')
+		 </if>
+		
+		 <if test='search == "nick"'>
+		 WHERE M.MEMBER_NICK LIKE CONCAT('%', #{keyword}, '%')
+		 </if>	
+		
+		 <if test='search == "all"'>
+		 WHERE B.BOARD_TITLE LIKE CONCAT('%', #{keyword}, '%')
+		 OR M.MEMBER_NICK LIKE CONCAT('%', #{keyword}, '%')
+		 OR B.BOARD_CONTENT LIKE CONCAT('%', #{keyword}, '%')
+		-</if>
+		
+		and board_report_count > 0 
+		order by board_report_count DESC
+		
+		LIMIT #{start}, #{end}
+	</select>
+	
+	<!-- 신고글 삭제 -->
+	<delete id="deleteReportBoard" parameterType="com.ez.teen.board.model.BoardModel">
+		DELETE FROM board
+		WHERE BOARD_NO = #{board_no}
+	</delete>
+	
+	<select id ="adminBoard" resultType="com.ez.teen.board.model.BoardModel" parameterType="com.ez.teen.board.model.BoardParam">
+
+SELECT
+ B.BOARD_NO                
+ ,B.BOARD_GROUP_NO
+ ,B.BOARD_TAG_NAME
+,B.BOARD_TITLE
+,B.BOARD_DATE
+,B.BOARD_HIT_COUNT
+,B.BOARD_LIKE_COUNT
+,B.BOARD_REPORT_COUNT
+,B.BOARD_FILE_CHECK
+,G.BGROUP_NAME
+,M.MEMBER_NICK
+,COUNT(C.BOARD_NO) AS board_comment_count
+
+FROM board B
+INNER JOIN bgroup G
+ON B.BOARD_GROUP_NO = G.BOARD_GROUP_NO
+INNER JOIN member M
+ON B.MEMBER_NO = M.MEMBER_NO
+LEFT OUTER JOIN bcomment C
+ON B.BOARD_NO = C.BOARD_NO
+
+
+<if test='board_group_no != null'>
+WHERE B.BOARD_GROUP_NO = #{board_group_no}
+</if>
+
+<if test='member_no != 0'>
+AND B.MEMBER_NO = #{member_no}
+</if>
+
+<if test='search == "title"'>
+AND B.BOARD_TITLE LIKE CONCAT('%', #{keyword}, '%')
+</if>
+
+<if test='search == "content"'>
+AND B.BOARD_CONTENT LIKE CONCAT('%', #{keyword}, '%')
+</if>
+
+<if test='search == "nick"'>
+AND M.MEMBER_NICK LIKE CONCAT('%', #{keyword}, '%')
+</if>
+
+<if test='search == "all"'>
+AND B.BOARD_TITLE LIKE CONCAT('%', #{keyword}, '%')
+OR M.MEMBER_NICK LIKE CONCAT('%', #{keyword}, '%')
+OR B.BOARD_CONTENT LIKE CONCAT('%', #{keyword}, '%')
+</if>
+
+<if test='board_tag_name == null'>
+AND REGEXP_LIKE (B.BOARD_TAG_NAME, '^HTML|^JAVA|^CSS|^C|^JS|^SQL|^PYTHON')
+</if>
+		
+<if test='board_tag_name != null'>
+AND LOWER(B.BOARD_TAG_NAME) LIKE '%#{board_tag_name}%'
+</if>
+
+
+ 		
+GROUP BY B.BOARD_NO, B.BOARD_GROUP_NO, B.BOARD_TAG_NAME,  B.BOARD_TITLE,B.BOARD_DATE,B.BOARD_HIT_COUNT,B.BOARD_LIKE_COUNT,B.BOARD_REPORT_COUNT,B.BOARD_FILE_CHECK,G.BGROUP_NAME,M.MEMBER_NICK
+
+<if test='sort == "recent"'>
+ORDER BY B.BOARD_DATE DESC
+</if>
+
+<if test='sort == "view"'>
+ORDER BY B.BOARD_HIT_COUNT DESC
+</if>
+
+<if test='sort == "recommend"'>
+ORDER BY B.BOARD_LIKE_COUNT DESC
+</if>
+
+<if test='sort == "comment"'>
+ORDER BY board_comment_count DESC
+</if>
+ LIMIT #{end}  OFFSET #{start}
+
+ </select>
+ 
+ 
+ 	<!-- 공지글 리스트 -->
+	<select id ="noticeBoard" resultType="com.ez.teen.notice.model.NoticeModel" parameterType="com.ez.teen.notice.model.NoticeParam">
+			SELECT
+				N.NOTI_NO
+				,N.MEMBER_NO
+				,M.MEMBER_NICK
+				,N.NOTI_TITLE
+				,N.NOTI_CONTENT
+				,N.NOTI_DATE
+				,N.NOTI_HIT_COUNT
+				,N.NOTI_FILE_CHECK
+				
+				FROM notice N
+				INNER JOIN member M
+				ON N.MEMBER_NO = M.MEMBER_NO
+			
+				<if test='search == "title"'>
+				AND N.NOTI_TITLE LIKE CONCAT('%', #{keyword}, '%')
+				</if>
+				
+				<if test='search == "content"'>
+				AND N.NOTI_CONTENT LIKE CONCAT('%', #{keyword}, '%')
+				</if>
+				
+				<if test='search == "nick"'>
+				AND M.MEMBER_NICK LIKE CONCAT('%', #{keyword}, '%')
+				</if>
+				
+				<if test='search == "all"'>
+				WHERE N.NOTI_TITLE LIKE CONCAT('%', #{keyword}, '%')
+				OR M.MEMBER_NICK LIKE CONCAT('%', #{keyword}, '%')
+				OR N.NOTI_CONTENT LIKE CONCAT('%', #{keyword}, '%')
+				</if>
+			
+				 LIMIT #{end}  OFFSET #{start}
+	</select>
+	
+	<!-- 공지글 삭제 -->
+	<delete id="noticeBoardDelete" parameterType="com.ez.teen.notice.model.NoticeModel">
+		DELETE FROM notice
+	 	WHERE NOTI_NO = #{noti_no}
+ 	</delete>
+ 	
+ 	<!-- 공지글 수정 -->
+	<update id="noticeBoardModify" parameterType="com.ez.teen.notice.model.NoticeModel">
+		UPDATE notice
+		SET NOTI_TITLE = #{noti_title},
+			NOTI_CONTENT = #{noti_content}
+		WHERE NOTI_NO = #{noti_no}
+	</update>
+	
+	
+	<!-- 파일 유무에 따른 체크 업데이트 -->
+	<update id="NotifileCk" parameterType="com.ez.teen.notice.mapper.NoticeMapper">
+		UPDATE notice SET
+		NOTI_FILE_CHECK = 'Y'
+		WHERE NOTI_NO = #{noti_no}
+	</update>
+	
+	<!-- 첨부파일 조회 -->
+	<select id="selectNotiFile" parameterType="int" resultType="hashMap">
+	
+		SELECT 
+		 FILE_NO
+		,ORG_FILE_NAME
+		,ROUND(FILE_SIZE/1024,1) AS FILE_SIZE
+		,DEL_GB
+		FROM bfile
+		WHERE NOTI_NO = #{noti_no}
+		AND DEL_GB = 'N'
+		ORDER BY FILE_NO ASC
+	
+	</select>
+	
+	<!-- 첨부파일 추가 -->
+	<insert id="insertNotiFile" parameterType="hashMap">
+		 INSERT INTO bfile(
+		 NOTI_NO
+		,ORG_FILE_NAME
+		,STORED_FILE_NAME
+		,FILE_SIZE
+		,FILE_DATE
+		)
+		VALUES(
+		 #{NOTI_NO}
+		,#{ORG_FILE_NAME}
+		,#{STORED_FILE_NAME}
+		,#{FILE_SIZE}
+		,#{FILE_DATE}
+		)
+	</insert>
+	
+	<!-- 첨부파일 수정 -->
+	<update id="updateNotiFile" parameterType="hashMap">
+	
+		UPDATE bfile SET
+		DEL_GB = 'Y'
+		WHERE FILE_NO = #{FILE_NO}
+	
+	</update>
+	
+	<!-- 첨부파일 삭제 -->
+	<update id="deleteNotiFile">
+
+		UPDATE bfile SET
+		DEL_GB = 'Y' WHERE FILE_NO = #{FILE_NO}
+	
+	</update>
+	
+	<!-- 첨부파일 다운로드 -->
+	<select id="downNotiFile" parameterType="hashMap" resultType="hashMap">
+ 
+		SELECT 
+		 STORED_FILE_NAME
+		,ORG_FILE_NAME
+		FROM bfile
+		WHERE FILE_NO = #{FILE_NO}
+	
+	</select>
+	
+	<update id="chatMemberModify" parameterType="com.ez.teen.admin.model.ChatParam">
+ UPDATE chat SET SEND_NICK = #{mod_member_nick}
+ WHERE SEND_NICK = #{member_nick}
+</update>
+
+
+<update id="chatMemberModify2" parameterType="com.ez.teen.admin.model.ChatParam">
+ UPDATE chat SET RECV_NICK = #{mod_member_nick}
+     WHERE RECV_NICK = #{member_nick}
+</update>
+
+
+<select id="getNick" parameterType="Int" resultType="String">
+SELECT MEMBER_NICK FROM member
+WHERE MEMBER_NO = #{member_no}
+</select>
+	
+</mapper>

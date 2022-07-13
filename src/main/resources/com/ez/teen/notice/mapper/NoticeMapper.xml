@@ -1,0 +1,225 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper 
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ez.teen.notice.mapper.NoticeMapper">
+	
+<select id ="noticeList" resultType="com.ez.teen.notice.model.NoticeModel" parameterType="com.ez.teen.notice.model.NoticeParam">
+	
+SELECT
+N.NOTI_NO
+,N.MEMBER_NO
+,M.MEMBER_NICK
+,N.NOTI_TITLE
+,N.NOTI_CONTENT
+,N.NOTI_DATE
+,N.NOTI_HIT_COUNT
+,N.NOTI_FILE_CHECK
+
+FROM notice N
+INNER JOIN member M
+ON N.MEMBER_NO = M.MEMBER_NO
+
+<if test='search == "title"'>
+AND N.NOTI_TITLE LIKE CONCAT('%', #{keyword}, '%')
+</if>
+
+<if test='search == "content"'>
+AND N.NOTI_CONTENT LIKE CONCAT('%', #{keyword}, '%')
+</if>
+
+<if test='search == "nick"'>
+AND M.MEMBER_NICK LIKE CONCAT('%', #{keyword}, '%')
+</if>
+
+<if test='search == "all"'>
+WHERE N.NOTI_TITLE LIKE CONCAT('%', #{keyword}, '%')
+OR M.MEMBER_NICK LIKE CONCAT('%', #{keyword}, '%')
+OR N.NOTI_CONTENT LIKE CONCAT('%', #{keyword}, '%')
+</if>
+
+LIMIT #{start} , #{end}
+</select>
+
+<!-- 전체 공지글 수 -->
+<select id="getNoticeCount" resultType="int" parameterType="com.ez.teen.notice.model.NoticeParam"> 
+		
+
+SELECT COUNT(*) FROM notice N
+INNER JOIN member M
+ON N.MEMBER_NO = M.MEMBER_NO
+
+<if test='search == "title"'>
+AND N.NOTI_TITLE LIKE CONCAT('%', #{keyword}, '%')
+</if>
+
+<if test='search == "content"'>
+AND N.NOTI_CONTENT LIKE CONCAT('%', #{keyword}, '%')
+</if>
+
+<if test='search == "nick"'>
+AND M.MEMBER_NICK LIKE CONCAT('%', #{keyword}, '%')
+</if>
+
+<if test='search == "all"'>
+WHERE N.NOTI_TITLE LIKE CONCAT('%', #{keyword}, '%')
+OR M.MEMBER_NICK LIKE CONCAT('%', #{keyword}, '%')
+OR N.NOTI_CONTENT LIKE CONCAT('%', #{keyword}, '%')
+</if>				
+</select>
+
+<!-- 게시글 작성 -->
+	<insert id="insertNotice" parameterType="com.ez.teen.notice.mapper.NoticeMapper" useGeneratedKeys="true" keyProperty="noti_no" >
+	<selectKey keyProperty="noti_no" resultType="int" order="BEFORE" >
+		SELECT IFNULL(max(noti_no),1) from notice
+	</selectKey>
+	<![CDATA[
+	INSERT INTO notice(
+	 NOTI_NO
+	,MEMBER_NO
+	,NOTI_TITLE
+	,NOTI_DATE
+	,NOTI_CONTENT
+	,NOTI_HIT_COUNT
+	)
+	VALUES(
+	 #{noti_no}
+	,#{member_no}
+	,#{noti_title}
+	,NOW()
+	,#{noti_content}
+	,0
+	)
+]]>
+	</insert>
+	
+	<!-- 파일 유무에 따른 체크 업데이트 -->
+	<update id="NotifileCk" parameterType="com.ez.teen.notice.mapper.NoticeMapper" >
+	UPDATE notice SET
+	NOTI_FILE_CHECK = 'Y'
+	WHERE NOTI_NO = #{noti_no}
+	</update>
+	
+	<!-- 첨부파일 업로드 -->
+	<insert id="insertNotiFile" parameterType="hashMap">
+	<![CDATA[ INSERT INTO bfile(
+	NOTI_NO
+	,ORG_FILE_NAME
+	,STORED_FILE_NAME
+	,FILE_SIZE
+	,FILE_DATE
+	)
+	VALUES(
+	#{NOTI_NO}
+	,#{ORG_FILE_NAME}
+	,#{STORED_FILE_NAME}
+	,#{FILE_SIZE}
+	,#{FILE_DATE} 
+	)
+	]]>
+	</insert>
+	
+	<!-- 첨부파일 조회 -->
+	<select id="selectNotiFile" parameterType="int" resultType="hashMap" >
+	<![CDATA[ 
+	SELECT 
+	 FILE_NO
+	,ORG_FILE_NAME
+	,ROUND(FILE_SIZE/1024,1) AS FILE_SIZE
+	,DEL_GB
+	FROM bfile
+	WHERE NOTI_NO = #{noti_no}
+	AND DEL_GB = 'N'
+	ORDER BY FILE_NO ASC
+	]]>
+	</select>
+
+	<!-- 신고댓글 리스트푸쉬 -->
+	<select id="reportCmtList" resultType="com.ez.teen.board.model.CommentModel" parameterType="com.ez.teen.board.model.CommentParam">
+			SELECT
+			B.BOARD_NO
+			,B.BOARD_TITLE
+			,B.BOARD_FILE_CHECK
+			,M.MEMBER_NICK
+			,C.BCOMMENT_NO
+			,C.BCOMMENT_CONTENT
+			,C.BCOMMENT_DATE
+			,C.BCOMMENT_REPORT_COUNT
+			,C.BCOMMENT_LIKE_COUNT
+			,C.REF_STEP
+			,C.REF_LEVEL
+			
+			
+			FROM board B
+			INNER JOIN bcomment C
+			ON B.BOARD_NO = C.BOARD_NO
+			INNER JOIN member M
+			ON B.MEMBER_NO = M.MEMBER_NO
+			
+			<if test='search == "content"'>
+			WHERE C.BCOMMENT_CONTENT LIKE CONCAT('%', #{keyword}, '%')
+			</if>
+			
+			<if test='search == "nick"'>
+			WHERE M.MEMBER_NICK LIKE CONCAT('%', #{keyword}, '%')
+			</if>
+					
+			<if test='search == "title"'>
+			WHERE B.BOARD_TITLE LIKE CONCAT('%', #{keyword}, '%')
+			</if>
+			
+					
+			<if test='search == "all"'>
+			WHERE C.BCOMMENT_CONTENT LIKE CONCAT('%', #{keyword}, '%')
+			OR MEMBER_NICK LIKE CONCAT('%', #{keyword}, '%')
+			OR B.BOARD_TITLE LIKE CONCAT('%', #{keyword}, '%')
+			</if>
+			
+			<if test='sort == null'>
+			ORDER BY B.BOARD_DATE DESC
+			</if>
+			
+			<if test='sort == "recent"'>
+			ORDER BY C.BCOMMENT_DATE DESC
+			</if>
+
+			<if test='sort == "report"'>
+			ORDER BY C.BCOMMENT_REPORT_COUNT DESC
+			</if>
+
+			
+		
+	
+	</select>
+
+	<!-- 신고 댓글 삭제 -->
+	<delete id="deleteCmt" parameterType="com.ez.teen.board.model.CommentModel">
+	DELETE FROM bcomment
+	WHERE REF_STEP = #{ref_step} AND BOARD_NO = #{board_no}
+	</delete>
+	
+<select id="selectNoticeDetail" parameterType="com.ez.teen.notice.model.NoticeParam" resultType="com.ez.teen.notice.model.NoticeModel">	
+SELECT 
+N.NOTI_NO
+,M.MEMBER_NICK
+,N.NOTI_TITLE
+,N.NOTI_CONTENT
+,N.NOTI_DATE
+,N.NOTI_HIT_COUNT
+,N.NOTI_FILE_CHECK
+FROM notice N
+INNER JOIN member M
+ON N.MEMBER_NO = M.MEMBER_NO
+
+WHERE N.NOTI_NO = #{noti_no}
+	
+</select>
+
+<update id="hitCount">
+
+UPDATE notice SET NOTI_HIT_COUNT = NOTI_HIT_COUNT + 1 WHERE NOTI_NO = #{noti_no}
+
+</update>
+
+
+
+</mapper>

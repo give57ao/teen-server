@@ -1,0 +1,672 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ez.teen.board.mapper.BoardMapper">
+
+	<!-- 전체 이용자 수 -->
+	<select id="getUserCount" resultType="int">
+		SELECT COUNT(*) AS allMemberCount FROM member
+		
+	</select>
+	 
+	<!-- 전체 게시글 수 -->
+	<select id="getBoardCount" resultType="int" parameterType="com.ez.teen.board.model.BoardParam"> 
+		SELECT COUNT(*) AS allBoardCount FROM board B
+		INNER JOIN member M
+		ON B.MEMBER_NO = M.MEMBER_NO
+		
+		<if test='board_group_no != null'>
+		WHERE B.BOARD_GROUP_NO = #{board_group_no}
+		</if>
+		
+		<if test='member_no != 0'>
+		AND B.MEMBER_NO = #{member_no}
+ 		</if>
+ 		
+ 		<if test='search == "title"'>
+		AND B.BOARD_TITLE LIKE CONCAT('%', #{keyword}, '%')
+		</if>
+
+		<if test='search == "content"'>
+		AND B.BOARD_CONTENT LIKE CONCAT('%', #{keyword}, '%')
+		</if>
+		
+		<if test='search == "nick"'>
+		AND M.MEMBER_NICK LIKE CONCAT('%', #{keyword}, '%')
+		</if>	
+		
+		<if test='search == "all"'>
+		AND B.BOARD_TITLE LIKE CONCAT('%', #{keyword}, '%')
+		OR M.MEMBER_NICK LIKE CONCAT('%', #{keyword}, '%')
+		OR B.BOARD_CONTENT LIKE CONCAT('%', #{keyword}, '%')
+		</if>
+ 	
+ 	
+ 		<if test='board_tag_name == null'>
+		AND REGEXP_LIKE (B.BOARD_TAG_NAME, '^HTML|^JAVA|^CSS|^C|^JS|^SQL|^PYTHON')
+		</if>
+		
+		<if test='board_tag_name != null'>
+		<![CDATA[
+		AND LOWER(B.BOARD_TAG_NAME) LIKE CONCAT('%', #{board_tag_name}, '%')
+		]]>
+		</if>
+ 		
+	</select>
+	
+	<!-- 전체 댓글 수 -->
+	<select id="getCommentCount" resultType="int" parameterType="com.ez.teen.board.model.CommentParam">
+		SELECT COUNT(*) AS allCommentCount FROM bcomment C
+		INNER JOIN board B
+        ON C.BOARD_NO = B.BOARD_NO
+        INNER JOIN member M
+        ON C.MEMBER_NO = M.MEMBER_NO
+		<!-- 내가 작성한 게시글 수 조건 -->
+		<if test='member_no != 0'>
+			WHERE C.MEMBER_NO = #{member_no}
+ 		</if>
+ 		
+ 		<if test='search == "title"'>
+		AND B.BOARD_TITLE LIKE CONCAT('%', #{keyword}, '%')
+		</if>
+
+		<if test='search == "content"'>
+		AND B.BOARD_CONTENT LIKE CONCAT('%', #{keyword}, '%')
+		</if>
+		
+		<if test='search == "nick"'>
+		AND M.MEMBER_NICK LIKE CONCAT('%', #{keyword}, '%')
+		</if>	
+		
+		<if test='search == "all"'>
+		AND B.BOARD_TITLE LIKE CONCAT('%', #{keyword}, '%')
+		OR M.MEMBER_NICK LIKE CONCAT('%', #{keyword}, '%')
+		OR B.BOARD_CONTENT LIKE CONCAT('%', #{keyword}, '%')
+		</if>
+ 		
+ 		
+	</select>
+	
+	<!-- 게시글 작성 -->
+	<insert id="insertBoard" parameterType="com.ez.teen.board.mapper.BoardMapper" useGeneratedKeys="true" keyProperty="board_no" >
+	<selectKey keyProperty="board_no" resultType="int" order="BEFORE" >
+		SELECT ifnull(max(board_no)+1,1) FROM board
+	</selectKey>
+		INSERT INTO board(
+	 MEMBER_NO
+	,BOARD_TITLE
+	,BOARD_DATE
+	,BOARD_CONTENT
+	,BOARD_HIT_COUNT
+	,BOARD_LIKE_COUNT
+	,BOARD_REPORT_COUNT
+	,BOARD_GROUP_NO
+	,BOARD_TAG_NAME
+	)
+	VALUES(
+	#{member_no}
+	,#{board_title}
+	,NOW()
+	,#{board_content}
+	,0
+	,0
+	,0
+	,#{board_group_no}
+	,#{board_tag_name}
+	)
+	</insert>
+	
+	<!-- 파일 유무에 따른 체크 업데이트 -->
+	<update id="fileCk" parameterType="com.ez.teen.board.mapper.BoardMapper" >
+		UPDATE board SET
+		BOARD_FILE_CHECK = 'Y'
+		WHERE BOARD_NO = #{board_no}
+	</update>
+
+	<!-- 첨부파일 업로드 -->
+	<insert id="insertFile" parameterType="hashMap">
+	 INSERT INTO bfile(
+	 BOARD_NO
+	,ORG_FILE_NAME
+	,STORED_FILE_NAME
+	,FILE_SIZE
+	,FILE_DATE
+	)
+	VALUES(
+	 #{BOARD_NO}
+	,#{ORG_FILE_NAME}
+	,#{STORED_FILE_NAME}
+	,#{FILE_SIZE}
+	,#{FILE_DATE} 
+	)
+	
+	</insert>
+	
+	<!-- 첨부파일 조회 -->
+	<select id="selectFile" parameterType="int" resultType="hashMap" >
+	SELECT 
+	 FILE_NO
+	,ORG_FILE_NAME
+	,ROUND(FILE_SIZE/1024,1) AS FILE_SIZE
+	,DEL_GB
+	FROM bfile
+	WHERE BOARD_NO = #{board_no}
+	AND DEL_GB = 'N'
+	ORDER BY FILE_NO ASC
+	</select>
+	
+	<!-- 첨부파일 다운로드 -->
+	<select id="downFile" parameterType="hashMap" resultType="hashMap">
+	
+	SELECT 
+	 STORED_FILE_NAME
+	,ORG_FILE_NAME
+	FROM bfile
+	WHERE FILE_NO = #{FILE_NO}
+	
+	</select>
+	
+	<!-- 첨부파일 수정 -->
+	<update id="updateFile" parameterType="hashMap" >
+		UPDATE bfile SET
+		DEL_GB = 'Y'
+		WHERE FILE_NO = #{FILE_NO}
+		
+	</update>
+	
+
+	
+	
+	
+<select id ="boardList" resultType="com.ez.teen.board.model.BoardModel" parameterType="com.ez.teen.board.model.BoardParam">
+
+SELECT
+ B.BOARD_NO                
+ ,B.BOARD_GROUP_NO
+ ,B.BOARD_TAG_NAME
+,B.BOARD_TITLE
+,B.BOARD_DATE
+,B.BOARD_HIT_COUNT
+,B.BOARD_LIKE_COUNT
+,B.BOARD_REPORT_COUNT
+,B.BOARD_FILE_CHECK
+,G.BGROUP_NAME
+,M.MEMBER_NICK
+,M.MEMBER_PRO_CHECK
+,COUNT(B.BOARD_NO) AS board_count
+,COUNT(C.BOARD_NO) AS board_comment_count
+
+FROM board B
+INNER JOIN bgroup G
+ON B.BOARD_GROUP_NO = G.BOARD_GROUP_NO
+INNER JOIN member M
+ON B.MEMBER_NO = M.MEMBER_NO
+LEFT OUTER JOIN bcomment C
+ON B.BOARD_NO = C.BOARD_NO
+
+<if test='member_no != 0'>
+WHERE B.MEMBER_NO = #{member_no}
+</if>
+
+<if test='board_group_no != null'>
+WHERE B.BOARD_GROUP_NO = #{board_group_no}
+</if>
+
+<if test='search == "title"'>
+AND B.BOARD_TITLE LIKE CONCAT('%', #{keyword}, '%')
+</if>
+
+<if test='search == "content"'>
+AND B.BOARD_CONTENT LIKE CONCAT('%', #{keyword}, '%')
+</if>
+
+<if test='search == "nick"'>
+AND M.MEMBER_NICK LIKE CONCAT('%', #{keyword}, '%')
+</if>
+
+<if test='search == "all"'>
+AND B.BOARD_TITLE LIKE CONCAT('%', #{keyword}, '%')
+OR M.MEMBER_NICK LIKE CONCAT('%', #{keyword}, '%')
+OR B.BOARD_CONTENT LIKE CONCAT('%', #{keyword}, '%')
+</if>
+
+<if test='board_tag_name == null'>
+AND REGEXP_LIKE (B.BOARD_TAG_NAME, '^HTML|^JAVA|^CSS|^C|^JS|^SQL|^PYTHON')
+</if>
+		
+<if test='board_tag_name != null'>
+<![CDATA[
+	AND LOWER(B.BOARD_TAG_NAME) LIKE CONCAT('%', #{board_tag_name}, '%')
+]]>
+</if>
+
+
+ 		
+
+
+
+GROUP BY B.BOARD_NO, B.BOARD_GROUP_NO, B.BOARD_TAG_NAME,  B.BOARD_TITLE,B.BOARD_DATE,B.BOARD_HIT_COUNT,B.BOARD_LIKE_COUNT,B.BOARD_REPORT_COUNT,B.BOARD_FILE_CHECK,G.BGROUP_NAME,M.MEMBER_NICK
+
+<if test='sort == null'>
+ORDER BY B.BOARD_DATE DESC
+</if>
+
+<if test='sort == "recent"'>
+ORDER BY B.BOARD_DATE DESC
+</if>
+
+<if test='sort == "view"'>
+ORDER BY B.BOARD_HIT_COUNT DESC
+</if>
+
+<if test='sort == "recommend"'>
+ORDER BY B.BOARD_LIKE_COUNT DESC
+</if>
+
+<if test='sort == "comment"'>
+ORDER BY board_comment_count DESC
+</if>
+
+ LIMIT #{end}  OFFSET #{start}
+
+</select>
+ 
+
+<select id ="commentList" resultType="com.ez.teen.board.model.CommentModel" parameterType="com.ez.teen.board.model.CommentParam">
+			SELECT
+			B.BOARD_NO
+			,B.BOARD_TITLE
+			,B.BOARD_FILE_CHECK
+			,M.MEMBER_NICK
+			,C.BCOMMENT_NO
+			,C.BCOMMENT_CONTENT
+			,C.BCOMMENT_DATE
+			,C.BCOMMENT_LIKE_COUNT
+			
+			
+			FROM board B
+			INNER JOIN bcomment C
+			ON B.BOARD_NO = C.BOARD_NO
+			INNER JOIN member M
+			ON B.MEMBER_NO = M.MEMBER_NO
+			
+			<if test='member_no != 0'>
+			WHERE C.MEMBER_NO = #{member_no}
+			</if>
+			
+			<if test='search == "title"'>
+			AND B.BOARD_TITLE LIKE CONCAT('%', #{keyword}, '%')
+			</if>
+			
+			<if test='search == "content"'>
+			AND C.BCOMMENT_CONTENT LIKE CONCAT('%', #{keyword}, '%')
+			</if>
+			
+			<if test='search == "all"'>
+			AND B.BOARD_TITLE LIKE CONCAT('%', #{keyword}, '%')
+			OR C.BCOMMENT_CONTENT LIKE CONCAT('%', #{keyword}, '%')
+			</if>
+			
+			<if test='sort == null'>
+			ORDER BY B.BOARD_DATE DESC
+			</if>
+			
+			<if test='sort == "recommend"'>
+			ORDER BY C.BCOMMENT_LIKE_COUNT DESC
+			</if>
+			
+			<if test='sort == "recent"'>
+			ORDER BY C.BCOMMENT_DATE DESC
+			</if>
+			
+	 LIMIT #{end} OFFSET #{start} 
+	</select>
+	
+	
+	<select id="selectBoardDetail"
+		parameterType="com.ez.teen.board.model.BoardParam"
+		resultType="com.ez.teen.board.model.BoardModel">
+		SELECT
+		C.BOARD_NO AS BOARD_NO
+		,B.BOARD_GROUP_NO AS BOARD_GROUP_NO
+		,B.BOARD_CONTENT AS BOARD_CONTENT
+		,B.BOARD_TITLE AS BOARD_TITLE
+		,B.BOARD_DATE AS BOARD_DATE
+		,B.BOARD_HIT_COUNT AS BOARD_HIT_COUNT
+		,B.BOARD_LIKE_COUNT AS BOARD_LIKE_COUNT
+		,B.BOARD_TAG_NAME AS BOARD_TAG_NAME
+		,B.BOARD_FILE_CHECK AS BOARD_FILE_CHECK
+		,M.MEMBER_NICK AS MEMBER_NICK
+		,M.MEMBER_NO AS MEMBER_NO
+		,COUNT(C.BOARD_NO) AS board_comment_count
+
+		FROM board B 
+		INNER JOIN bgroup G
+		ON B.BOARD_GROUP_NO = G.BOARD_GROUP_NO
+		INNER JOIN member M
+		ON B.MEMBER_NO = M.MEMBER_NO
+		LEFT OUTER JOIN bcomment C
+		ON B.BOARD_NO = C.BOARD_NO
+
+		WHERE B.BOARD_NO = #{board_no}
+
+		GROUP BY C.BOARD_NO
+		,B.BOARD_GROUP_NO
+		,B.BOARD_CONTENT
+		,B.BOARD_TITLE
+		,B.BOARD_DATE
+		,B.BOARD_HIT_COUNT
+		,B.BOARD_LIKE_COUNT
+		,B.BOARD_TAG_NAME
+		,B.BOARD_FILE_CHECK
+		,M.MEMBER_NICK
+		,M.MEMBER_NO
+
+	</select>
+
+
+	<select id="selectComment"
+		parameterType="com.ez.teen.board.model.BoardCommentModel"
+		resultType="com.ez.teen.board.model.BoardCommentModel">
+		SELECT
+		C.BCOMMENT_NO AS BCOMMENT_NO,
+		C.BOARD_NO AS BOARD_NO,
+		M.MEMBER_NICK AS MEMBER_NICK,
+		C.BCOMMENT_DATE AS BCOMMENT_DATE,
+		C.BCOMMENT_CONTENT AS BCOMMENT_CONTENT,
+		C.BCOMMENT_LIKE_COUNT AS BCOMMENT_LIKE_COUNT,
+		C.REF_STEP AS REF_STEP,
+		C.REF_LEVEL AS REF_LEVEL,
+		IFNULL (F.FILE_NO, 0) AS FILE_NO,
+		F.ORG_FILE_NAME AS ORG_FILE_NAME,
+		F.FILE_SIZE AS FILE_SIZE,
+		F.DEL_GB AS DEL_GB
+
+		FROM bcomment C
+		INNER JOIN member M
+		ON C.MEMBER_NO = M.MEMBER_NO
+		INNER JOIN board B
+		ON C.BOARD_NO = B.BOARD_NO
+		LEFT OUTER JOIN bfile F
+		ON C.BCOMMENT_NO = F.BCOMMENT_NO
+		WHERE
+		C.BOARD_NO = #{board_no} 
+		AND C.REF_LEVEL = 0
+		ORDER BY
+		REF_STEP, REF_LEVEL
+	</select>
+	
+	<select id="selectAnswer"
+		parameterType="com.ez.teen.board.model.BoardParam"
+		resultType="com.ez.teen.board.model.BoardAnswerModel">
+	  SELECT 
+    	C.BOARD_NO AS BOARD_NO,
+	  	M.MEMBER_NICK AS MEMBER_NICK,
+	  	C.BCOMMENT_DATE AS BCOMMENT_DATE,
+	  	C.BCOMMENT_CONTENT AS BCOMMENT_CONTENT,
+	  	C.BCOMMENT_LIKE_COUNT AS BCOMMENT_LIKE_COUNT,
+	  	C.REF_STEP AS REF_STEP,
+	  	C.REF_LEVEL AS REF_LEVEL
+	  FROM
+    	member M INNER JOIN bcomment C
+    	ON M.MEMBER_NO = C.MEMBER_NO
+	  WHERE 
+    	C.BOARD_NO= #{board_no} 
+		AND C.REF_LEVEL != 0
+      ORDER BY
+      	REF_STEP, REF_LEVEL 
+	</select>
+	
+<insert id="insertComment" parameterType="com.ez.teen.board.mapper.BoardMapper" useGeneratedKeys="true" keyProperty="bcomment_no" >
+	<selectKey keyProperty="bcomment_no" resultType="int" order="BEFORE" >
+		SELECT ifnull(max(bcomment_no)+1,1) FROM bcomment
+	</selectKey>
+	
+	INSERT INTO bcomment
+	VALUES(
+	 #{bcomment_no}
+	,#{board_no}
+	,#{bcomment_content}
+	,NOW()
+	,#{member_no}
+	,0
+	,0
+	,#{ref_step}
+	,0
+	)
+
+	</insert>
+	
+	<!-- 댓글첨부파일 업로드 -->
+	<insert id="insertCmtFile" parameterType="hashMap">
+	 INSERT INTO bfile(
+	 BCOMMENT_NO
+	,ORG_FILE_NAME
+	,STORED_FILE_NAME
+	,FILE_SIZE
+	,FILE_DATE
+	)
+	VALUES(
+	 #{BCOMMENT_NO}
+	,#{ORG_FILE_NAME}
+	,#{STORED_FILE_NAME}
+	,#{FILE_SIZE}
+	,#{FILE_DATE} 
+	)
+	</insert>
+	
+	<update id="hitCount">
+		update board set board_hit_count = board_hit_count + 1 where board_no = #{board_no}
+	</update>
+	                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                      
+	<update id="recommendBoard">
+		update board set board_like_count = board_like_count + 1 where board_no = #{board_no}
+	</update>
+	
+	<select id="getRefStep" resultType="int" parameterType="int">
+	SELECT IFNULL(MAX(REF_STEP),0) FROM bcomment
+	WHERE BOARD_NO = #{board_no}
+	</select>
+	
+	<update id="updateBoard">
+		UPDATE board
+		SET
+		 BOARD_TITLE = #{board_title}
+		 ,BOARD_CONTENT = #{board_content}
+		 ,BOARD_GROUP_NO = #{board_group_no}
+		 ,BOARD_TAG_NAME = #{board_tag_name}
+		WHERE BOARD_NO = #{board_no} AND MEMBER_NO = #{member_no}
+	</update>
+	
+	<select id="getRefLevel" resultType="int" parameterType="com.ez.teen.board.model.CommentParam">
+	SELECT IFNULL(MAX(REF_LEVEL),0) FROM bcomment
+	WHERE BOARD_NO  = #{board_no}
+	AND REF_STEP = #{ref_step}
+	</select>
+	
+	<insert id="insertReComment" parameterType="com.ez.teen.board.mapper.BoardMapper" useGeneratedKeys="true" keyProperty="bcomment_no" >
+	<selectKey keyProperty="bcomment_no" resultType="int" order="BEFORE" >
+	SELECT IFNULL(max(bcomment_no)+1,1) FROM bcomment
+	</selectKey>
+	INSERT INTO bcomment
+	VALUES(
+	 #{bcomment_no}
+	,#{board_no}
+	,#{bcomment_content}
+	,NOW()
+	,#{member_no}
+	,0
+	,0
+	,#{ref_step}
+	,#{ref_level}
+	)
+	</insert>
+	
+	
+	<update id="updateTagName">
+	UPDATE  board SET 
+	BOARD_TAG_NAME = ''
+	WHERE BOARD_NO = #{board_no}
+	
+	</update>
+	
+	<!-- board삭제 -->
+	<delete id="deleteBoard" parameterType="int">
+		DELETE FROM board
+		WHERE BOARD_NO = #{board_no}
+	</delete>
+	
+	<!-- board삭제시 Pk 비활 -->
+	<update id="updateBoardPkNo">
+		ALTER TABLE board
+		DISABLE CONSTRAINT SYS_C007710 CASCADE
+	</update>
+	
+	<!-- board삭제시 Pk 활성화 -->
+	<update id="updateBoardPkYes">
+		ALTER TABLE board
+		ENABLE CONSTRAINT SYS_C007710
+	</update>
+
+	<!-- 댓글 삭제 -->
+	<delete id="deleteComment" parameterType="com.ez.teen.board.model.CommentParam">
+		DELETE FROM bcomment
+        WHERE 
+            BOARD_NO=#{board_no} 
+			AND
+            REF_STEP=#{ref_step}
+	</delete>
+
+    <!-- 댓글 업데이트 -->
+    <select id="updateComment" parameterType="com.ez.teen.board.model.CommentParam">
+        UPDATE 
+            bcomment
+        SET 
+            REF_STEP = REF_STEP-1
+        WHERE
+            BOARD_NO=#{board_no}
+            and ref_step > #{ref_step}
+    </select>
+	
+	<update id="deleteFile">
+		UPDATE bfile SET DEL_GB = 'Y' WHERE FILE_NO = #{FILE_NO}
+	</update>
+	
+	<delete id="deleteBcomment" parameterType="int">
+		DELETE FROM bcomment WHERE BCOMMENT_NO = #{BCOMMENT_NO]
+	</delete>
+	
+	<!-- 댓글개수 구하기 -->
+	<select id="commentCount" parameterType="int" resultType="int">
+		SELECT
+			IFNULL(COUNT(REF_STEP),0) 
+		FROM 
+			bcomment
+		WHERE 
+			BOARD_NO = #{board_no} AND 
+			REF_LEVEL=0
+	</select>
+	
+	<!-- 답글개수 구하기 -->
+	<select id="answerCount" parameterType="com.ez.teen.board.model.BoardParam"
+		resultType="com.ez.teen.board.model.BoardAnswerModel">
+		SELECT
+			REF_STEP,
+    		COUNT(*) AS BOARD_ANSWER_COUNT
+		FROM 
+			bcomment
+		WHERE 
+			BOARD_NO = #{board_no}
+		GROUP BY
+			REF_STEP
+	</select>
+	
+	<insert id="insertBoardLike">
+	INSERT INTO like_table (BOARD_NO, MEMBER_NO)
+	VALUES (#{board_no}, #{member_no})
+</insert>
+
+	<delete id="deleteBoardLike">
+		DELETE FROM like_table
+		WHERE BOARD_NO = #{board_no} AND MEMBER_NO = #{member_no}
+	</delete>
+
+	<select id="updateBoardLike">
+		UPDATE board
+		SET
+		BOARD_LIKE_COUNT = (SELECT COUNT(*)
+		FROM like_table
+		WHERE BOARD_NO = #{board_no})
+		WHERE BOARD_NO = #{board_no}
+	</select>
+
+	<select id="getBoardLike" resultType="int" parameterType="com.ez.teen.board.model.BoardParam">
+		SELECT COUNT(LIKE_NO) FROM like_table WHERE BOARD_NO = #{board_no}
+		AND MEMBER_NO = #{member_no}
+	</select>
+	
+	<insert id="insertBoardReport">
+	INSERT INTO report (BOARD_NO, MEMBER_NO)
+	VALUES (#{board_no}, #{member_no})
+</insert>
+
+	<delete id="deleteBoardReport">
+		DELETE FROM report
+		WHERE BOARD_NO = #{board_no} AND MEMBER_NO = #{member_no}
+	</delete>
+
+	<select id="updateBoardReport">
+		UPDATE board
+		SET
+		BOARD_REPORT_COUNT = (SELECT COUNT(*)
+		FROM report
+		WHERE BOARD_NO = #{board_no})
+		WHERE BOARD_NO = #{board_no}
+	</select>
+
+	<select id="getBoardReport" resultType="int" parameterType="com.ez.teen.board.model.BoardParam">
+		SELECT COUNT(REPORT_NO) FROM report WHERE BOARD_NO = #{board_no}
+		AND MEMBER_NO = #{member_no}
+	</select>
+	
+	<update id= "modifyComment" parameterType="com.ez.teen.board.model.CommentModel">
+		UPDATE bcomment
+		SET
+		BCOMMENT_DATE = NOW(),
+		BCOMMENT_CONTENT = #{bcomment_content}
+		WHERE 
+		BCOMMENT_NO = #{bcomment_no}
+		
+	</update>
+	
+		<update id= "updateCmtFile" parameterType="com.ez.teen.board.model.CommentModel">
+		UPDATE bfile
+		SET
+		ORG_FILE_NAME = #{org_file_name},
+		STORED_FILE_NAME = #{stored_file_name},
+		FILE_SIZE = #{file_size},
+		FILE_DATE = NOW(),
+		DEL_GB = 'N'
+		WHERE 
+		FILE_NO = #{file_no}
+	</update>
+	
+	<!-- 답글 수정 -->
+	<update id="modifyReComment" parameterType="com.ez.teen.board.model.CommentModel">
+	UPDATE bcomment
+	SET
+	BCOMMENT_CONTENT = #{bcomment_content},
+	BCOMMENT_DATE = NOW()
+	WHERE
+	BOARD_NO = #{board_no}
+	AND
+	REF_STEP = #{ref_step}
+	AND
+	REF_LEVEL = #{ref_level}
+	
+	</update>
+	
+	
+	
+</mapper>
