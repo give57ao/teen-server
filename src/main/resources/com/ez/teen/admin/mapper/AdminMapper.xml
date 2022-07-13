@@ -6,7 +6,7 @@
 	
 	<!-- 전체 회원 수 -->
 	<select id="getMemberCount" resultType="int" parameterType="com.ez.teen.member.model.MemberParam">
-		SELECT COUNT(*) AS allMemberCount FROM member
+		SELECT COUNT(*) AS allMemberCount FROM MEMBER
 
 				<if test='search == "id"'>
 				WHERE MEMBER_ID LIKE CONCAT('%', #{keyword}, '%')
@@ -26,7 +26,7 @@
 	<!-- 회원관리 리스트 -->
 	<select id ="memberList" resultType="com.ez.teen.member.model.MemberModel" parameterType="com.ez.teen.member.model.MemberParam">
 			            SELECT MEMBER_NO, MEMBER_ID, MEMBER_NAME, MEMBER_NICK, MEMBER_EMAIL, MEMBER_DATE, MEMBER_ADMIN, MEMBER_PRO_CHECK
-					FROM member
+					FROM MEMBER
 					
 					<if test='search == "id"'>
 					WHERE MEMBER_ID LIKE CONCAT('%', #{keyword}, '%')
@@ -46,13 +46,13 @@
 	
 	<!-- 회원정보 수정 -->
 	<select id="memberModifyForm" resultType="com.ez.teen.member.model.MemberModel" parameterType="com.ez.teen.member.model.MemberModel">
-		SELECT * FROM member
+		SELECT * FROM MEMBER
 	 	WHERE MEMBER_NO = #{member_no}
 	</select>
 	
  	<update id="memberModify" parameterType="com.ez.teen.member.model.MemberModel">
 		 <![CDATA[
-		 UPDATE member SET
+		 UPDATE MEMBER SET
 		 MEMBER_NICK = #{member_nick},
 		 MEMBER_ADMIN = #{member_admin},
 		 MEMBER_PRO_CHECK = #{member_pro_check}
@@ -62,13 +62,13 @@
 	
 	<!-- 회원정보 삭제 -->
 	<delete id="memberDelete" parameterType="com.ez.teen.member.model.MemberModel">
-		DELETE FROM member 
+		DELETE FROM MEMBER 
 	 	WHERE MEMBER_NO = #{member_no}
  	</delete>
  	
  	<select id="getReportCount" resultType="int" parameterType="com.ez.teen.admin.model.ReportParam"> 
-		SELECT COUNT(*) FROM board B
-		INNER JOIN member M
+		SELECT COUNT(*) FROM BOARD B
+		INNER JOIN MEMBER M
 		ON B.MEMBER_NO = M.MEMBER_NO 
 		WHERE BOARD_REPORT_COUNT > 0
 		
@@ -102,8 +102,8 @@
 		SELECT 
 		M.MEMBER_NO,B.BOARD_NO,B.BOARD_CONTENT,B.BOARD_TITLE,
 		B.BOARD_DATE,B.BOARD_REPORT_COUNT,M.MEMBER_NICK 
-		FROM board B
-		INNER JOIN member M 
+		FROM BOARD B
+		INNER JOIN MEMBER M 
 		ON B.MEMBER_NO = M.MEMBER_NO
 		
 		 <if test='search == "title"'>
@@ -128,7 +128,7 @@
 	
 	<!-- 신고글 삭제 -->
 	<delete id="deleteReportBoard" parameterType="com.ez.teen.board.model.BoardModel">
-		DELETE FROM board
+		DELETE FROM BOARD
 		WHERE BOARD_NO = #{board_no}
 	</delete>
 	
@@ -148,12 +148,12 @@ SELECT
 ,M.MEMBER_NICK
 ,COUNT(C.BOARD_NO) AS board_comment_count
 
-FROM board B
-INNER JOIN bgroup G
+FROM BOARD B
+INNER JOIN BGROUP G
 ON B.BOARD_GROUP_NO = G.BOARD_GROUP_NO
-INNER JOIN member M
+INNER JOIN MEMBER M
 ON B.MEMBER_NO = M.MEMBER_NO
-LEFT OUTER JOIN bcomment C
+LEFT OUTER JOIN BCOMMENT C
 ON B.BOARD_NO = C.BOARD_NO
 
 
@@ -227,8 +227,8 @@ ORDER BY board_comment_count DESC
 				,N.NOTI_HIT_COUNT
 				,N.NOTI_FILE_CHECK
 				
-				FROM notice N
-				INNER JOIN member M
+				FROM NOTICE N
+				INNER JOIN MEMBER M
 				ON N.MEMBER_NO = M.MEMBER_NO
 			
 				<if test='search == "title"'>
@@ -254,13 +254,13 @@ ORDER BY board_comment_count DESC
 	
 	<!-- 공지글 삭제 -->
 	<delete id="noticeBoardDelete" parameterType="com.ez.teen.notice.model.NoticeModel">
-		DELETE FROM notice
+		DELETE FROM NOTICE
 	 	WHERE NOTI_NO = #{noti_no}
  	</delete>
  	
  	<!-- 공지글 수정 -->
 	<update id="noticeBoardModify" parameterType="com.ez.teen.notice.model.NoticeModel">
-		UPDATE notice
+		UPDATE NOTICE
 		SET NOTI_TITLE = #{noti_title},
 			NOTI_CONTENT = #{noti_content}
 		WHERE NOTI_NO = #{noti_no}
@@ -269,7 +269,7 @@ ORDER BY board_comment_count DESC
 	
 	<!-- 파일 유무에 따른 체크 업데이트 -->
 	<update id="NotifileCk" parameterType="com.ez.teen.notice.mapper.NoticeMapper">
-		UPDATE notice SET
+		UPDATE NOTICE SET
 		NOTI_FILE_CHECK = 'Y'
 		WHERE NOTI_NO = #{noti_no}
 	</update>
@@ -282,7 +282,7 @@ ORDER BY board_comment_count DESC
 		,ORG_FILE_NAME
 		,ROUND(FILE_SIZE/1024,1) AS FILE_SIZE
 		,DEL_GB
-		FROM bfile
+		FROM BFILE
 		WHERE NOTI_NO = #{noti_no}
 		AND DEL_GB = 'N'
 		ORDER BY FILE_NO ASC
@@ -291,7 +291,7 @@ ORDER BY board_comment_count DESC
 	
 	<!-- 첨부파일 추가 -->
 	<insert id="insertNotiFile" parameterType="hashMap">
-		 INSERT INTO bfile(
+		 INSERT INTO BFILE(
 		 NOTI_NO
 		,ORG_FILE_NAME
 		,STORED_FILE_NAME
@@ -310,7 +310,7 @@ ORDER BY board_comment_count DESC
 	<!-- 첨부파일 수정 -->
 	<update id="updateNotiFile" parameterType="hashMap">
 	
-		UPDATE bfile SET
+		UPDATE BFILE SET
 		DEL_GB = 'Y'
 		WHERE FILE_NO = #{FILE_NO}
 	
@@ -319,7 +319,7 @@ ORDER BY board_comment_count DESC
 	<!-- 첨부파일 삭제 -->
 	<update id="deleteNotiFile">
 
-		UPDATE bfile SET
+		UPDATE BFILE SET
 		DEL_GB = 'Y' WHERE FILE_NO = #{FILE_NO}
 	
 	</update>
@@ -330,25 +330,25 @@ ORDER BY board_comment_count DESC
 		SELECT 
 		 STORED_FILE_NAME
 		,ORG_FILE_NAME
-		FROM bfile
+		FROM BFILE
 		WHERE FILE_NO = #{FILE_NO}
 	
 	</select>
 	
 	<update id="chatMemberModify" parameterType="com.ez.teen.admin.model.ChatParam">
- UPDATE chat SET SEND_NICK = #{mod_member_nick}
+ UPDATE CHAT SET SEND_NICK = #{mod_member_nick}
  WHERE SEND_NICK = #{member_nick}
 </update>
 
 
 <update id="chatMemberModify2" parameterType="com.ez.teen.admin.model.ChatParam">
- UPDATE chat SET RECV_NICK = #{mod_member_nick}
+ UPDATE CHAT SET RECV_NICK = #{mod_member_nick}
      WHERE RECV_NICK = #{member_nick}
 </update>
 
 
 <select id="getNick" parameterType="Int" resultType="String">
-SELECT MEMBER_NICK FROM member
+SELECT MEMBER_NICK FROM MEMBER
 WHERE MEMBER_NO = #{member_no}
 </select>
 	

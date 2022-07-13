@@ -6,14 +6,14 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-ma
 <!-- 메세지 리스트 가져오기 -->
 <select id="message_list" parameterType="com.ez.teen.chat.model.ChatModel" resultType="com.ez.teen.chat.model.ChatModel">
     select chat_no, room, send_nick, recv_nick, send_time, content, read_chk
-    from chat
-    where chat_no in (select max(chat_no) from chat group by room) and (send_nick = #{member_nick} or recv_nick=#{member_nick})
+    from CHAT
+    where chat_no in (select max(chat_no) from CHAT group by room) and (send_nick = #{member_nick} or recv_nick=#{member_nick})
     order by SEND_TIME ASC
 </select>
 
 <!-- 메세지 list에서 상대방 profile 가져오기 -->
 <select id="get_other_profile" parameterType="com.ez.teen.chat.model.ChatModel" resultType="String">
-    select member_profile from member
+    select member_profile from MEMBER
     <choose>
         <when test="send_nick == member_nick">
             where member_nick = #{recv_nick}
@@ -26,14 +26,14 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-ma
 
 <!-- 안읽은 메세지 갯수 가져오기 -->
 <select id="count_unread" parameterType="com.ez.teen.chat.model.ChatModel" resultType="Int">
-    select count(chat_no) from chat
+    select count(chat_no) from CHAT
     where recv_nick=#{member_nick} and read_chk=0 and room=#{room}
 </select>
 
 <!-- 메세지 내용 가져오기 -->
 <select id="room_content_list" parameterType="com.ez.teen.chat.model.ChatModel" resultType="com.ez.teen.chat.model.ChatModel">
     select c.chat_no, c.room, c.send_nick, c.recv_nick, c.send_time, c.content, c.read_chk, m.member_profile
-    from chat c left outer join member m
+    from CHAT c left outer join MEMBER m
     on c.recv_nick = m.member_nick
     <choose>
         <when test="room != 0">
@@ -48,7 +48,7 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-ma
 
 <!-- 메세지 읽음 처리 -->
 <update id="message_read_chk" parameterType="com.ez.teen.chat.model.ChatModel">
-    update chat set read_chk=1
+    update CHAT set read_chk=1
     <choose>
         <when test="room != 0">
             where room=#{room} and read_chk=0 and recv_nick=#{member_nick}
@@ -64,28 +64,38 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-ma
 <insert id="messageSendInlist" parameterType="com.ez.teen.chat.model.ChatModel">
     <choose>
         <when test="room != 0">
-            insert into chat values(SEQ_CHAT_NO.NEXTVAL, #{room}, #{send_nick}, #{recv_nick}, date_format(current_timestamp(),'%y-%m-%d %h:%m'), #{content}, 0)
+            insert into CHAT(
+	 room,
+	 send_nick,
+	 recv_nick,
+	 send_time,
+	 content,
+	 read_chk
+	)
+             values(#{room}, #{send_nick}, #{recv_nick}, DATE_FORMAT(NOW(), '%Y-%m-%d %H:%i'), #{content}, 0)
         </when>
         <otherwise>
-            insert into chat values(SEQ_CHAT_NO.NEXTVAL, #{room}, #{send_nick}, #{recv_nick}, date_format(current_timestamp(),'%y-%m-%d %h:%m'), #{content}, 0)
+            insert into CHAT(chat_no,room,send_nick,recv_nick,send_time) 
+            values(#{room}, #{send_nick}, #{recv_nick}, DATE_FORMAT(NOW(), '%Y-%m-%d %H:%i'))
         </otherwise>
     </choose>
 </insert>
 
+
 <!-- room 번호 최댓값 구하기 -->
 <select id="max_room"  parameterType="com.ez.teen.chat.model.ChatModel" resultType="Int">
-     select IFNULL(max(room),0) from chat
+     select IFNULL(max(room),0) from CHAT
 </select>
 
 <!-- 메세지 이력이 있는지 검색 -->
 <select id="exist_chat" parameterType="com.ez.teen.chat.model.ChatModel" resultType="Int">
-    select count(chat_no) from chat
+    select count(chat_no) from CHAT
     where (recv_nick = #{recv_nick} and send_nick=#{send_nick}) or (send_nick = #{recv_nick} and recv_nick=#{send_nick})
 </select>
 
 <!-- 기존 메세지 내역의 room 번호를 가져옴 -->
 <select id="select_room"  parameterType="com.ez.teen.chat.model.ChatModel" resultType="String">
-    select room from chat
+    select room from CHAT
     where (recv_nick = #{recv_nick} and send_nick=#{send_nick}) or (send_nick = #{recv_nick} and recv_nick=#{send_nick})
     LIMIT 0,1
 </select>

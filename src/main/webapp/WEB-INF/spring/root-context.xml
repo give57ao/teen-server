@@ -18,10 +18,10 @@
 		<property name="url" value="jdbc:mysql://teen.ctrdjwzpdijw.ap-northeast-2.rds.amazonaws.com:3306/teen?useSSL=false"></property>
          -->
          <property name="driverClassName" value="net.sf.log4jdbc.sql.jdbcapi.DriverSpy" />
-         <property name="url" value="jdbc:log4jdbc:mysql://teen.ctrdjwzpdijw.ap-northeast-2.rds.amazonaws.com:3306/teen?useSSL=false" />
+         <property name="url" value="jdbc:log4jdbc:mysql://teen1.ctrdjwzpdijw.ap-northeast-2.rds.amazonaws.com:3306/teen?useSSL=false" />
 
         
-        <property name="username" value="teen"></property>
+        <property name="username" value="teen1"></property>
         <property name="password" value="xlszhej1!"></property>
     </bean>      
     

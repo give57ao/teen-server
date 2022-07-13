@@ -22,10 +22,10 @@ SELECT
 		,M.MEMBER_NICK 
 		,M.MEMBER_NO 
 		
-		FROM board B
-		INNER JOIN bgroup G
+		FROM BOARD B
+		INNER JOIN BGROUP G
 		ON B.BOARD_GROUP_NO = G.BOARD_GROUP_NO
-		INNER JOIN member M
+		INNER JOIN MEMBER M
 		ON B.MEMBER_NO = M.MEMBER_NO
         
 		WHERE B.MEMBER_NO = #{member_no}
@@ -36,8 +36,8 @@ SELECT
 	<!-- 전체 게시글 수 -->
 	<select id="getFollowCount" resultType="int"
 		parameterType="com.ez.teen.follow.model.MemberFollowParam">
-		SELECT COUNT(*) AS allBoardCount FROM board B
-		INNER JOIN member M
+		SELECT COUNT(*) AS allBoardCount FROM BOARD B
+		INNER JOIN MEMBER M
 		ON
 		B.MEMBER_NO = M.MEMBER_NO
 
@@ -97,7 +97,7 @@ SELECT
 
 <!-- 중복팔로우 확인 결과 -->
 <select id="countFollow" parameterType="com.ez.teen.follow.model.MemberFollowModel" resultType="int">
-SELECT COUNT(*) FROM follow
+SELECT COUNT(*) FROM FOLLOW
 WHERE FOLLOW_NO = #{follow_no} AND FOLLOWING_MEMBER_NO = #{member_no}
 </select>
 
@@ -115,16 +115,16 @@ M.MEMBER_POINT,
 M.MEMBER_PROFILE 
 
 
-FROM member M
-INNER JOIN follow F
+FROM MEMBER M
+INNER JOIN FOLLOW F
 ON M.MEMBER_NICK = F.MEMBER_NICK
 
-WHERE M.MEMBER_NO IN (SELECT FOLLOWING_MEMBER_NO FROM follow WHERE FOLLOW_NO = #{member_no})
+WHERE M.MEMBER_NO IN (SELECT FOLLOWING_MEMBER_NO FROM FOLLOW WHERE FOLLOW_NO = #{member_no})
 ORDER BY F.FOLLOW_DATE DESC
 </select>
 
 <delete id="myFollowDelete" parameterType="com.ez.teen.follow.model.MemberFollowModel">
-DELETE FROM follow
+DELETE FROM FOLLOW
 WHERE FOLLOW_NO = #{member_no} AND FOLLOWING_MEMBER_NO = #{following_member_no}
 
 </delete>
