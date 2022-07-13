@@ -79,7 +79,7 @@
     
    <!-- Footer -->
    <jsp:include page="../template/footer.jsp" flush="false" />
-   
+    
    <!-- JS -->
    <script type="text/javascript" src="/teen/resources/js/member/member.js"></script>
 </body>
