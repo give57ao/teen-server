@@ -129,4 +129,21 @@ WHERE FOLLOW_NO = #{member_no} AND FOLLOWING_MEMBER_NO = #{following_member_no}
 
 </delete>
 
+<insert id="insertFollowAlarm"  parameterType="com.ez.teen.follow.model.MemberFollowModel">
+	INSERT INTO ALARM
+
+	(OCCUR_TIME,
+	FOLLOW_NO
+	,FOLLOWING_MEMBER_NO
+	,MEMBER_NICK
+	)
+
+	VALUES(
+	NOW(),
+	#{follow_no},
+	#{member_no},
+	#{member_nick}
+	)
+</insert>
+
 </mapper>

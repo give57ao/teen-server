@@ -34,9 +34,9 @@ public class FollowServiceImpl implements FollowService{
 
 	//팔로우 하기
 	@Override
-	public void insertFollow(MemberFollowModel followMdoel) throws Exception {
+	public void insertFollow(MemberFollowModel followModel) throws Exception {
 		 
-		followMapper.insertFollow(followMdoel);
+		followMapper.insertFollow(followModel);
 	}
 
 	//팔로우 중복확인
@@ -58,6 +58,12 @@ public class FollowServiceImpl implements FollowService{
 	public void myFollowDelete(MemberFollowModel followModel) {
 		
 		followMapper.myFollowDelete(followModel);
+		
+	}
+
+	@Override
+	public void insertFollowAlarm(MemberFollowModel followModel) throws Exception {
+		followMapper.insertFollowAlarm(followModel);
 		
 	}
 

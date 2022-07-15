@@ -16,7 +16,7 @@ public interface FollowService {
 	public int getFollowCount(MemberFollowParam followParam);
 	
 	//팔로우 하기
-	public void insertFollow(MemberFollowModel followMdoel)throws Exception;
+	public void insertFollow(MemberFollowModel followModel)throws Exception;
 	
 	//팔로우 중복확인
 	public int countFollow(MemberFollowModel followModel)throws Exception;
@@ -26,4 +26,5 @@ public interface FollowService {
 
 	public void myFollowDelete(MemberFollowModel followModel);
 	
+	public void insertFollowAlarm(MemberFollowModel followModel) throws Exception;
 }

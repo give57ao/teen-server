@@ -86,9 +86,10 @@ public class FollowController {
 		
 		try {
 			if (followResult == 0) {
-
+				
 				followService.insertFollow(followModel);
-
+				followService.insertFollowAlarm(followModel);	
+				
 				return "1";
 
 			} else if (followResult > 0) {

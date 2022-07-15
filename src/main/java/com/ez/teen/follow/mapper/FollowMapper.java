@@ -17,7 +17,7 @@ public interface FollowMapper {
 
 	public int getFollowCount(MemberFollowParam followParam);
 
-	public void insertFollow(MemberFollowModel followMdoel)throws Exception;
+	public void insertFollow(MemberFollowModel followModel)throws Exception;
 
 	public int countFollow(MemberFollowModel followModel)throws Exception;
 
@@ -26,6 +26,6 @@ public interface FollowMapper {
 
 	public void myFollowDelete(MemberFollowModel followModel);
 
-	
+	public void insertFollowAlarm(MemberFollowModel followModel) throws Exception;
 
 }
