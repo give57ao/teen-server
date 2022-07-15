@@ -316,6 +316,16 @@ public class BoardServiceImpl implements BoardService {
 		boardMapper.deleteRecomment(commentParam);
 	}
 
+	@Override
+	public int selectFileChk(int board_no) {
+		return boardMapper.selectFileChk(board_no);
+	}
+
+	@Override
+	public void updateFileChk(int board_no) {
+		boardMapper.updateFileChk(board_no);
+	}
+
 
 
 }

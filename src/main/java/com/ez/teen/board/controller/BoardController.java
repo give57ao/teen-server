@@ -108,6 +108,14 @@ public class BoardController {
       boardModel.setBoard_tag_name(old_board_tag_name);  //init이후 posting된 값 받아오기
       boardService.updateBoard(boardModel, files, fileNames, mpRequest);
       
+      int fChk = boardService.selectFileChk(boardModel.getBoard_no());
+      
+      if(fChk == 0) {
+    	  boardService.updateFileChk(boardModel.getBoard_no());
+      }
+      
+      
+      
       
       return "redirect:/board";
    }

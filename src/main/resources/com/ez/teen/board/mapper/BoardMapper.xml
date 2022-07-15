@@ -693,6 +693,17 @@ ORDER BY board_comment_count DESC
 	
 	</update>
 	
+	<select id="selectFileChk" parameterType="int" resultType="int">
+		SELECT IFNULL(COUNT(file_no),0) FROM BFILE 
+		WHERE board_no = #{board_no}
+		AND del_gb = 'N' 
+	</select>
+	
+	<update id="updateFileChk" parameterType="int">
+		UPDATE BOARD SET
+		BOARD_FILE_CHECK = 'N'
+		WHERE BOARD_NO = #{board_no}
+	</update>
 	
 	
 </mapper>

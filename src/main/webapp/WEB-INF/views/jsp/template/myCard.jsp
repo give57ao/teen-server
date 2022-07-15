@@ -4,6 +4,7 @@
 <!DOCTYPE html>
 <html>
 <body>
+ <c:if test="${sessionScope.member_no != null}">
 <%
 int member_no = (Integer)session.getAttribute("member_no");
 %>
@@ -151,5 +152,6 @@ function deleteScrap(num) {
 	}
 }
 </script>
+</c:if>
 </body>
 </html>  

@@ -12,8 +12,7 @@
 						<c:choose>
 							<c:when test="${tmp.member_profile eq 'N'}">
 								<!-- 프로필 사진이 없을 경우 -->
-								<img src="/teen/resources/images/icon/icon_profile.svg"
-									class="badge">
+								<img src="/teen/resources/images/icon/icon_profile.svg" class="badge">
 							</c:when>
 							<c:otherwise>
 								<!-- 프로필 사진이 있을 경우 -->

@@ -130,4 +130,10 @@ public interface BoardMapper {
 	public void updateBoardPkYes();
 
 	public void deleteRecomment(CommentParam commentParam);
+
+	//첨부파일 최종 확인
+	public int selectFileChk(int board_no);
+
+	//board_file_check 변경
+	public void updateFileChk(int board_no);
 }
