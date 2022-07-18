@@ -52,7 +52,7 @@ int member_no = (Integer)session.getAttribute("member_no");
                   <ul class="side_menu">
                      <li><a href="#">전체 쪽지함</a></li>
                   </ul>
-                  <input type="button" name="del_all" value="전체삭제">
+                  <input type="button" name="del_all" value="전체삭제" onclick="deleteAllChatAlarm('${sessionScope.member_nick}')"/>
                  </div>
                  <ul class="tap_list">
                     <!-- 반복문 필요 부분 -->
@@ -163,8 +163,10 @@ function deleteFollowAlarm(no) {
       dataType : "json",
       data : {alarm_no},	
       success : function (data) {
+    	  if(data == 1){
          console.log("성공");
-         $('#my_card').load(location.href +  ' #my_card');
+         $('#tap_follow').load(location.href +  ' #tap_follow');
+    	  }
       }
    });
    
@@ -179,23 +181,27 @@ function deleteChatAlarm(no) {
       dataType : "json",
       data : {alarm_no},
       success : function (data) {
-         console.log("성공");
-         $('#my_card').load(location.href +  ' #my_card');
+         if(data ==1){
+    	  console.log("성공");
+         $('#tap_message').load(location.href +  ' #tap_message');
+      }
       }
    });
    
-   /* function deleteAllChatAlarm() {
-
+    function deleteAllChatAlarm(del_nick) {
+	var nickname = del_nick;
       $.ajax({
          url : "/teen/deleteAllChatAlarm",
          type : "post",
          dataType : "json",
-         data : 
+         data : {nickname},
          success : function (data) {
-            console.log("성공");
-            $('#my_card').load(location.href +  ' #my_card');
+            if(data ==1){
+        	 console.log("성공");
+            $('#tap_message').load(location.href +  ' #tap_message');
          }
-      }); */
+         }
+      }); 
    
 }
 </script>

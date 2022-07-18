@@ -89,22 +89,23 @@ public class ChatController {
 	
 	@RequestMapping("/deleteChatAlarm")
 	@ResponseBody
-	public String deleteFollowAlarm(@RequestParam("alarm_no") int alarm_no) {
+	public int deleteFollowAlarm(@RequestParam("alarm_no") int alarm_no) {
 		
 		chatService.deleteChatAlarm(alarm_no);
-		
-		 return "redirect:/board/";
+		int result = 1;
+		 return result;
 	}
 	
 	@RequestMapping("/deleteAllChatAlarm")
 	@ResponseBody
-	public String deleteAllFollowAlarm(HttpSession session, ChatModel chatModel) {
+	public int deleteAllFollowAlarm(@RequestParam("nickname") String nickname, ChatModel chatModel) {
 		
-		String member_nick = (String) session.getAttribute("member_nick");
-		chatModel.setMember_nick(member_nick);
+		chatModel.setMember_nick(nickname);
 		
 		chatService.deleteAllChatAlarm(chatModel);
-		
-		 return "redirect:/board/";
+		System.out.println("삭제 완료!!");
+		int result = 1;
+
+		 return result;
 	}
 }

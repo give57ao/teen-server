@@ -138,11 +138,11 @@ public class FollowController {
 	
 	@RequestMapping("/deleteFollowAlarm")
 	@ResponseBody
-	public String deleteFollowAlarm(@RequestParam("alarm_no") int alarm_no) {
+	public int deleteFollowAlarm(@RequestParam("alarm_no") int alarm_no) {
 		System.out.println("================삭제기모띠");
 		followService.deleteFollowAlarm(alarm_no);
-		
-		 return "redirect:/board/";
+		int result = 1;
+		 return result;
 	}
 	
 }
