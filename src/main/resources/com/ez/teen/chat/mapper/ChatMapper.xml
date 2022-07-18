@@ -34,7 +34,7 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-ma
 <select id="room_content_list" parameterType="com.ez.teen.chat.model.ChatModel" resultType="com.ez.teen.chat.model.ChatModel">
     select c.chat_no, c.room, c.send_nick, c.recv_nick, c.send_time, c.content, c.read_chk, m.member_profile
     from CHAT c left outer join MEMBER m
-    on c.recv_nick = m.member_nick
+    on c.send_nick = m.member_nick
     <choose>
         <when test="room != 0">
             where room=#{room} and content is not null
