@@ -107,6 +107,23 @@ public class ChatServiceImpl implements ChatService{
 		chatMapper.message_read_chk(chatModel);
 	}
 
+	@Override
+	public void insertChatAlarm(ChatModel chatModel) {
+		chatMapper.insertChatAlarm(chatModel);
+	}
+
+	@Override
+	public void deleteChatAlarm(int alarm_no) {
+		chatMapper.deleteChatAlarm(alarm_no);
+		
+	}
+
+	@Override
+	public void deleteAllChatAlarm(ChatModel chatModel) {
+		chatMapper.deleteAllChatAlarm(chatModel);
+		
+	}
+
 	
 	
 	

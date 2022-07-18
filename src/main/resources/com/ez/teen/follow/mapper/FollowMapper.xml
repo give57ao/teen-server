@@ -139,11 +139,17 @@ WHERE FOLLOW_NO = #{member_no} AND FOLLOWING_MEMBER_NO = #{following_member_no}
 	)
 
 	VALUES(
-	NOW(),
+	DATE_FORMAT(NOW(), '%Y-%m-%d %H:%i'),
 	#{follow_no},
 	#{member_no},
 	#{member_nick}
 	)
 </insert>
 
+<delete id="deleteFollowAlarm" parameterType="com.ez.teen.follow.model.MemberFollowModel">
+
+DELETE FROM ALARM
+WHERE ALARM_NO = #{alarm_no}
+
+</delete>
 </mapper>

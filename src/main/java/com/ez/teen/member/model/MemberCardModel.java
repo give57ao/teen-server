@@ -48,6 +48,9 @@ public class MemberCardModel {
 	private String other_nick;
 	private String member_profile;
 	
+	private int alarm_no;
+	private String occur_time;
+	
 	public String getFollow_nick() {
 		return follow_nick;
 	}
@@ -326,6 +329,22 @@ public class MemberCardModel {
 
 	public void setMember_profile(String member_profile) {
 		this.member_profile = member_profile;
+	}
+
+	public int getAlarm_no() {
+		return alarm_no;
+	}
+
+	public void setAlarm_no(int alarm_no) {
+		this.alarm_no = alarm_no;
+	}
+
+	public String getOccur_time() {
+		return occur_time;
+	}
+
+	public void setOccur_time(String occur_time) {
+		this.occur_time = occur_time;
 	}
 	
 	

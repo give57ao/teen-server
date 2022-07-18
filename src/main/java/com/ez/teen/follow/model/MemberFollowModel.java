@@ -39,7 +39,7 @@ public class MemberFollowModel {
 	private Date file_date;
 	private String del_gb;
 
-	
+	private int alarm_no;
 	
 	
 	public String getMember_name() {
@@ -282,4 +282,13 @@ public class MemberFollowModel {
 		this.member_id = member_id;
 	}
 
+	public int getAlarm_no() {
+		return alarm_no;
+	}
+
+	public void setAlarm_no(int alarm_no) {
+		this.alarm_no = alarm_no;
+	}
+
+	
 }

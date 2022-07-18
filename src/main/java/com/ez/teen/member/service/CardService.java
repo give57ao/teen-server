@@ -24,11 +24,10 @@ public interface CardService {
 	public int getCommentCount(MemberCardModel cardModel);
 	
 	// 내가 팔로우 한 사람 정보
-	public List<MemberCardModel> getFollowList(MemberCardModel cardModel)throws Exception;
+	public List<MemberCardModel> getFollowAlarm(MemberCardModel cardModel) throws Exception;
 
 	// 내가 스크랩한 게시글 정보
 	public List<MemberCardModel> getScrapList(MemberCardModel cardModel)throws Exception;
 	
-	//받은 쪽지 리스트 받아오기
-	public List<ChatModel> getRecvMessageList(MemberCardModel cardModel) throws Exception;
+	public List<MemberCardModel> getChatAlarm(MemberCardModel cardModel) throws Exception;
 }

@@ -5,6 +5,7 @@ import java.util.ArrayList;
 import org.apache.ibatis.annotations.Mapper;
 
 import com.ez.teen.chat.model.ChatModel;
+import com.ez.teen.follow.model.MemberFollowModel;
 
 @Mapper
 public interface ChatMapper {
@@ -27,4 +28,9 @@ public interface ChatMapper {
 	
 	public void message_read_chk(ChatModel chatModel);
 	
+	public void insertChatAlarm(ChatModel chatModel);
+	
+	public void deleteChatAlarm(int alarm_no);
+	
+	public void deleteAllChatAlarm(ChatModel chatModel);
 }

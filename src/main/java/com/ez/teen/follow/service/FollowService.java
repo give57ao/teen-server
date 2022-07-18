@@ -27,4 +27,6 @@ public interface FollowService {
 	public void myFollowDelete(MemberFollowModel followModel);
 	
 	public void insertFollowAlarm(MemberFollowModel followModel) throws Exception;
+	
+	public void deleteFollowAlarm(int alarm_no);
 }

@@ -83,7 +83,28 @@ public class ChatController {
 		chatModel.setContent(content);
 
 		int flag = chatService.messageSendInlist(chatModel);
-
+		chatService.insertChatAlarm(chatModel);
 		return flag;
+	}
+	
+	@RequestMapping("/deleteChatAlarm")
+	@ResponseBody
+	public String deleteFollowAlarm(@RequestParam("alarm_no") int alarm_no) {
+		
+		chatService.deleteChatAlarm(alarm_no);
+		
+		 return "redirect:/board/";
+	}
+	
+	@RequestMapping("/deleteAllChatAlarm")
+	@ResponseBody
+	public String deleteAllFollowAlarm(HttpSession session, ChatModel chatModel) {
+		
+		String member_nick = (String) session.getAttribute("member_nick");
+		chatModel.setMember_nick(member_nick);
+		
+		chatService.deleteAllChatAlarm(chatModel);
+		
+		 return "redirect:/board/";
 	}
 }

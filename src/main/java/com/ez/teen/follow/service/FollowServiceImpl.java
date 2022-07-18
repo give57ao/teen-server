@@ -67,5 +67,11 @@ public class FollowServiceImpl implements FollowService{
 		
 	}
 
+	@Override
+	public void deleteFollowAlarm(int alarm_no) {
+		followMapper.deleteFollowAlarm(alarm_no);
+		
+	}
+
 	
 }

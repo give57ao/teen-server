@@ -52,9 +52,8 @@ public class CardServiceImpl implements CardService{
 
 	// 내가 팔로우 한 사람 정보
 	@Override
-	public List<MemberCardModel> getFollowList(MemberCardModel cardModel) throws Exception {
-
-		return cardMapper.getFollowList(cardModel);
+	public List<MemberCardModel> getFollowAlarm(MemberCardModel cardModel) throws Exception {
+		return cardMapper.getFollowAlarm(cardModel);
 	}
 
 	// 내가 스크랩한 게시글 정보
@@ -63,9 +62,11 @@ public class CardServiceImpl implements CardService{
 		
 		return cardMapper.getScrapList(cardModel);
 	}
-	
-	public List<ChatModel> getRecvMessageList(MemberCardModel cardModel) throws Exception{
-		
-		return cardMapper.getRecvMessageList(cardModel);
+
+	@Override
+	public List<MemberCardModel> getChatAlarm(MemberCardModel cardModel) throws Exception {
+		return cardMapper.getChatAlarm(cardModel);
 	}
+
+	
 }

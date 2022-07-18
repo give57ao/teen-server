@@ -15,6 +15,7 @@ public class ChatModel {
 	private String other_nick;
 	private String member_profile;
 	private String member_nick;
+	private int alarm_no;
 	
 	private int unread;
 	public String getChat_no() {
@@ -88,6 +89,12 @@ public class ChatModel {
 	}
 	public void setUnread(int unread) {
 		this.unread = unread;
+	}
+	public int getAlarm_no() {
+		return alarm_no;
+	}
+	public void setAlarm_no(int alarm_no) {
+		this.alarm_no = alarm_no;
 	}
 	
 	

@@ -10,7 +10,7 @@ int member_no = (Integer)session.getAttribute("member_no");
 %>
 <input type="hidden" id="member_no" name="member_no" value="<%=member_no %>">
 <form id="myCard" name="myCard">
-	<div id="my_card">
+	<div id="my_card" class="my_card">
 		<div class="my_card_wrap">
 			<!-- Info -->
 			<c:forEach items="${list}" var="my">
@@ -50,9 +50,7 @@ int member_no = (Integer)session.getAttribute("member_no");
             <div class="tap_c tap_message">
             	<div class="tap_side_menu tap_wrap">
             		<ul class="side_menu">
-	            		<li><a href="#">전체</a></li>
-	            		<li><a href="#">받은쪽지</a></li>
-	            		<li><a href="#">보낸쪽지</a></li>
+	            		<li><a href="#">전체 쪽지함</a></li>
 	            	</ul>
 	            	<input type="button" name="del_all" value="전체삭제">
 	           	</div>
@@ -63,12 +61,13 @@ int member_no = (Integer)session.getAttribute("member_no");
 	           			<div class="view_active">
 		           			<div class="tap_list_top tap_overtext">
 		            			<h4 class="row_top"><span class="rank">[Expert]</span> ${chat.send_nick }</h4>
-		            			<span class="row_top date">2022-06-22</span>
+		            			<span class="row_top date">${chat.occur_time}</span>
 		           			</div>
 		           			<p class="tap_overtext">쪽지가 도착하였습니다. 쪽지가 도착하였습니다.</p>
 	           			</div>
 	           			<div class="tap_list_del">
-	           				<a href="#"><img src="/teen/resources/images/icon/icon_delete.svg"></a>
+	           			    <input type="hidden" name= "alarm_no" id= "alarm_no" value="${chat.alarm_no }"/>
+	           				<a onclick="deleteChatAlarm()"><img src="/teen/resources/images/icon/icon_delete.svg"></a>
 	           			</div>
 	           		</li>
 	           		</c:forEach>
@@ -76,7 +75,7 @@ int member_no = (Integer)session.getAttribute("member_no");
             </div>
             
             <!-- Tab: Follow -->
-            <div class="tap_c tap_follow">
+            <div class="tap_c tap_follow" id="tap_follow">
             	<ul class="tap_list">
 	           		<!-- 반복문 필요 부분 -->
 	           		<c:forEach items="${followList }" var="follow" >
@@ -85,13 +84,15 @@ int member_no = (Integer)session.getAttribute("member_no");
 	           		<li class="tap_wrap">
 	           			<div class="view_active">
 		           			<div class="tap_list_top tap_overtext">
-		            			<h4 class="row_top"><span class="rank">[Expert]</span> ${follow.follow_nick}</h4>
-		            			<span class="row_top date"><fmt:formatDate value="${follow.follow_date}" pattern="yyyy.MM.dd"/></span>
+		            			<h4 class="row_top"><span class="rank">[Expert]</span> ${follow.member_nick}</h4>
+		            			<span class="row_top date">${follow.occur_time}</span>
+		            			<input type="hidden" name= "alarm_no" id= "alarm_no" value="${follow.alarm_no }"/>
 		           			</div>
-		           			<p class="tap_overtext">${follow.follow_nick }님을 팔로우 했습니다.</p>
+		           			<p class="tap_overtext">${follow.member_nick }님을 팔로우 했습니다.</p>
 	           			</div>
 	           			<div class="tap_list_del">
-	           				<a href="#"><img src="/teen/resources/images/icon/icon_delete.svg"></a>
+	           				<input type="hidden" name= "alarm_no" id= "alarm_no" value="${follow.alarm_no }"/>
+	           				<a onclick="deleteFollowAlarm()"><img src="/teen/resources/images/icon/icon_delete.svg"></a>
 	           			</div>
 	           		</li>
 	           		</c:when>
@@ -100,7 +101,8 @@ int member_no = (Integer)session.getAttribute("member_no");
 	           			<div class="view_active">
 		           			<div class="tap_list_top tap_overtext">
 		            			<h4 class="row_top"><span class="rank">[Expert]</span> ${follow.member_nick }</h4>
-		            			<span class="row_top date"><fmt:formatDate value="${follow.follow_date}" pattern="yyyy.MM.dd"/></span>
+		            			<span class="row_top date">${follow.occur_time}</span>
+		            			<input type="hidden" name= "alarm_no" id= "alarm_no" value="${follow.alarm_no }"/>
 		           			</div>
 		           			<p class="tap_overtext">${follow.member_nick }님이 회원님을 팔로우 했습니다.</p>
 	           			</div>
@@ -143,6 +145,7 @@ int member_no = (Integer)session.getAttribute("member_no");
 		</div>
 	</div>
 </form>
+<script type="text/javascript" src="https://code.jquery.com/jquery-3.2.1.min.js"></script>
 <script type="text/javascript">
 function deleteScrap(num) {
 	var chk = confirm("해당 게시물 스크랩을 취소하시겠습니까?")
@@ -150,6 +153,51 @@ function deleteScrap(num) {
 		location.href='/teen/scrap/deleteCardScrap?scrap_no='+num
 		location.reload(true);
 	}
+}
+
+function deleteFollowAlarm() {
+	var alarm_no = document.getElementById('alarm_no').value;
+
+	$.ajax({
+		url : "/teen/follow/deleteFollowAlarm",
+		type : "post",
+		dataType : "json",
+		data : {alarm_no},
+		success : function (data) {
+			console.log("성공");
+			$('#my_card').load(location.href +  ' #my_card');
+		}
+	});
+	
+}
+
+function deleteChatAlarm() {
+	var alarm_no = document.getElementById('alarm_no').value;
+
+	$.ajax({
+		url : "/teen/deleteChatAlarm",
+		type : "post",
+		dataType : "json",
+		data : {alarm_no},
+		success : function (data) {
+			console.log("성공");
+			$('#my_card').load(location.href +  ' #my_card');
+		}
+	});
+	
+	function deleteAllChatAlarm() {
+
+		$.ajax({
+			url : "/teen/deleteAllChatAlarm",
+			type : "post",
+			dataType : "json",
+			data : 
+			success : function (data) {
+				console.log("성공");
+				$('#my_card').load(location.href +  ' #my_card');
+			}
+		});
+	
 }
 </script>
 </c:if>

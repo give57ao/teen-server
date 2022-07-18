@@ -136,5 +136,13 @@ public class FollowController {
 		
 	}
 	
+	@RequestMapping("/deleteFollowAlarm")
+	@ResponseBody
+	public String deleteFollowAlarm(@RequestParam("alarm_no") int alarm_no) {
+		
+		followService.deleteFollowAlarm(alarm_no);
+		
+		 return "redirect:/board/";
+	}
 	
 }

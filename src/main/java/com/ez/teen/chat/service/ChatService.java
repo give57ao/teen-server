@@ -23,4 +23,10 @@ public interface ChatService {
 	public int select_room(ChatModel chatModel);
 	
 	public void message_read_chk(ChatModel chatModel);
+	
+	public void insertChatAlarm(ChatModel chatModel);
+	
+	public void deleteChatAlarm(int alarm_no);
+	
+	public void deleteAllChatAlarm(ChatModel chatModel);
 }

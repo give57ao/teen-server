@@ -79,4 +79,30 @@ SELECT
 		WHERE RECV_NICK = #{member_nick}
 	</select>
 
+	<select id="getFollowAlarm" parameterType="com.ez.teen.member.model.MemberCardModel" resultType="com.ez.teen.member.model.MemberCardModel">
+		SELECT
+		ALARM_NO,
+		OCCUR_TIME,
+		FOLLOW_NO,
+		FOLLOWING_MEMBER_NO,
+		MEMBER_NICK
+		FROM ALARM	
+		
+		WHERE FOLLOW_NO = #{member_no}
+		
+	</select>
+	
+	<select id="getChatAlarm" parameterType="com.ez.teen.member.model.MemberCardModel" resultType="com.ez.teen.member.model.MemberCardModel">
+		SELECT
+		ALARM_NO,
+		OCCUR_TIME,
+		SEND_NICK,
+		RECV_NICK
+		FROM ALARM	
+		
+		WHERE RECV_NICK = #{member_nick}
+		
+	</select>
+	
+	
 </mapper>
