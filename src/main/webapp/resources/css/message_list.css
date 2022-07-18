@@ -49,7 +49,7 @@ p {
 }
 
 .badge {
-	margin-left: 15px;
+	margin-left: 12px;
 }
 
 .msg-container,
@@ -130,17 +130,20 @@ p {
 	color: #464646;
 	margin: 0 0 8px 0;
 	font-family: '맑은 고딕', '돋움', 'Malgun Gothic', 'Dotum', Arial, Roboto, sans-serif;
+	transform: translate(45px, -37px);
 }
 
 .chat_ib h5 span {
-	font-size: 17px;
+	font-size: 15px;
 	float: right;
+	transform: translateX(-22px);
 }
 
 .chat_ib p {
-	font-size: 14px;
+	font-size: 16px;
 	color: #989898;
-	margin: auto
+	margin: auto;
+	transform: translate(-1px, -21px);
 }
 
 .chat_img {
@@ -162,7 +165,7 @@ p {
 .chat_list {
 	border-bottom: 1px solid #f7f7f7;
 	margin: 0;
-	padding: 18px 16px 10px;
+	padding: 11px 17px 11px;
 }
 
 .chat_list_box :hover {
@@ -229,6 +232,7 @@ p {
 	padding: 10px 10px 10px 12px;
 	width: 100%;
 	font-family: '맑은 고딕', '돋움', 'Malgun Gothic', 'Dotum', Arial, Roboto, sans-serif;
+	transform: translateX(-27px);
 }
 
 .outgoing_msg {
@@ -305,4 +309,11 @@ p {
     padding-left: 5px;
     padding-right: 5px;
     border-radius: 3px;
+    position: absolute;
+    left: 34%;
+    top: 39%;
+}
+
+.sent_date{
+	transform: translateX(-22px);
 }

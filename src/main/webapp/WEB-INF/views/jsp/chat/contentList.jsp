@@ -39,7 +39,7 @@
 		<div class="outgoing_msg">
 			<div class="sent_msg">
 				<p>${tmp.content }</p>
-				<span class="time_date"> ${tmp.send_time }</span>
+				<span class="time_date sent_date"> ${tmp.send_time }</span>
 			</div>
 		</div>
 		</c:otherwise>
