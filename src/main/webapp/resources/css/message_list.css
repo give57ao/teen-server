@@ -297,3 +297,12 @@ p {
 	overflow:auto;
 	height:90%;
 }
+
+.bg-danger{
+	background-color: #ff5442;
+    color: #fff;
+    padding: 0px;
+    padding-left: 5px;
+    padding-right: 5px;
+    border-radius: 3px;
+}

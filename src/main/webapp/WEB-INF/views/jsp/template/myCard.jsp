@@ -47,7 +47,7 @@ int member_no = (Integer)session.getAttribute("member_no");
             </div>
             
             <!-- Tab: Message -->
-            <div class="tap_c tap_message">
+            <div class="tap_c tap_message" id="tap_message">
                <div class="tap_side_menu tap_wrap">
                   <ul class="side_menu">
                      <li><a href="#">전체 쪽지함</a></li>
@@ -187,7 +187,7 @@ function deleteChatAlarm(no) {
       }
       }
    });
-   
+}
     function deleteAllChatAlarm(del_nick) {
 	var nickname = del_nick;
       $.ajax({
@@ -198,7 +198,7 @@ function deleteChatAlarm(no) {
          success : function (data) {
             if(data ==1){
         	 console.log("성공");
-            $('#tap_message').load(location.href +  ' #tap_message');
+        	 $('#tap_message').load(location.href +  ' #tap_message');
          }
          }
       }); 

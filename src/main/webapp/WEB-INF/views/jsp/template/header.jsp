@@ -38,8 +38,7 @@
                     </c:if>
                     <li><a href="/teen/member/logout" class="log" onClick="logout()">로그아웃</a></li>
                     <li><a href="/teen/member/" class="log">마이페이지</a></li>
-                    <li><a class="chat" >쪽지</a></li>
-                    <li><a href="#" onclick="msgList()" ><img src="/teen/resources/images/icon/icon_alarm_n.svg"></a></li>
+                    <li><a class="chatIcon" ><img src="/teen/resources/images/icon/message.png"></a></li>
                   
                   <!--프로필 이미지 -->
                   	<c:forEach items="${icon}" var="profile">
@@ -63,7 +62,7 @@
     <script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.2/jquery.min.js"></script>
 	<script type="text/javascript" src="/teen/resources/js/common.js"></script>
 	<script type="text/javascript">
-	$('.chat').on("click",function(e){
+	$('.chatIcon').on("click",function(e){
 		
 		e.preventDefault();
 		
